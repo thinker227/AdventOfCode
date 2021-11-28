@@ -332,3 +332,8 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+
+
+# Custom
+src/AdventOfCode.Execution/Properties/launchSettings.json
