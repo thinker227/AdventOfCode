@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdventOfCode.Common\AdventOfCode.Common.csproj" />
+    <ProjectReference Include="..\AdventOfCode.Solutions\AdventOfCode.Solutions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InputFiles Include="$(SolutionDir)\..\res\input\*.txt" />
+  </ItemGroup>
+  <Target Name="CopyInputFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(InputFiles)" DestinationFolder="$(TargetDir)\res\input" />
+  </Target>
+
+</Project>
