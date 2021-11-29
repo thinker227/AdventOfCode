@@ -17,6 +17,6 @@ public interface ISolver {
 	/// <param name="input">The puzzle input.</param>
 	/// <returns>A <see cref="Solution"/> instance
 	/// containing the solution of the puzzle.</returns>
-	Solution Solve(ReadOnlySpan<char> input);
+	Solution Solve(string? input);
 
 }

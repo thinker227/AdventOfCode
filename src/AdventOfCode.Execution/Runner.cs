@@ -24,7 +24,7 @@ public static class Runner {
 	/// <exception cref="FileNotFoundException">
 	/// No input file for the specified day exists.
 	/// </exception>
-	public static ReadOnlySpan<char> GetInput(int day) {
+	public static string GetInput(int day) {
 		var path = @$"{inputPath}\{day:D2}.txt";
 		if (!File.Exists(path))
 			throw new FileNotFoundException($"Could not find input file for day {day} - '{path}' is missing.");
