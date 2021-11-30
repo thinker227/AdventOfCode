@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AdventOfCode.Common;
 
-public static class Extensions {
+public static class SolverExtensions {
 
 	private static readonly Dictionary<Type, int> solverDays = new();
 	/// <summary>
