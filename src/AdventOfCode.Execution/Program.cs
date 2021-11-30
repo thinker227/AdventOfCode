@@ -1,4 +1,5 @@
 ﻿using System;
+using AdventOfCode.Common;
 using AdventOfCode.Execution;
 
 
@@ -14,18 +15,6 @@ if (day is < 1 or > 25)
 
 var solver = Runner.GetSolver(day);
 var input = Runner.GetInput(day);
-var solution = solver.Solve(input);
+var solutionResult = Runner.RunSolver(solver, input);
 
-writePartSolution(solution.Part1, 1);
-writePartSolution(solution.Part2, 2);
-
-
-
-static void writePartSolution(string? solution, int part) {
-	if (solution is null) return;
-
-	Console.ForegroundColor = ConsoleColor.DarkGray;
-	Console.Write($"Part {part}: ");
-	Console.ForegroundColor = ConsoleColor.White;
-	Console.WriteLine(solution);
-}
+SolutionWriter.WriteSolution(solutionResult);
