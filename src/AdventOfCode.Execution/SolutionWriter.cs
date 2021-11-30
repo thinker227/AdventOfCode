@@ -52,12 +52,11 @@ public static class SolutionWriter {
 				.Write();
 
 			// Stack trace: {stack trace}
-			var stackTrace = GetFormattedExceptionStackTrace(solutionResult.Exception!);
 			Text.FromString("Stack trace: ")
 				.WithColor(ConsoleColor.DarkGray)
 				.WithNewline()
 				.Write();
-			stackTrace.Write();
+			GetFormattedExceptionStackTrace(solutionResult.Exception!).Write();
 		}
 		else {
 			Text text = new();
