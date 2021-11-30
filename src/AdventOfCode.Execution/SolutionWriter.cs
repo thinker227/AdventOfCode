@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using AdventOfCode.Common;
 
 namespace AdventOfCode.Execution;
@@ -29,12 +30,12 @@ public static class SolutionWriter {
 
 		Text.FromString("Elapsed time: ")
 			.WithColor(ConsoleColor.DarkGray)
-			.Append(solutionResult.ElapsedTime.ToString())
+			.Append($"{solutionResult.ElapsedTime}\n")
 			.WithColor(ConsoleColor.Yellow)
 			.WithNewline()
 			.Write();
 
-		if (solutionResult.HasException)
+		if (solutionResult.HasException) {
 			Text.FromString($"Exception ")
 				.WithColor(ConsoleColor.DarkGray)
 				.Append($"{solutionResult.Exception!.GetType().FullName}")
@@ -45,10 +46,18 @@ public static class SolutionWriter {
 				.WithColor(ConsoleColor.Red)
 				.WithNewline()
 				.Write();
+
+			var stackTrace = GetFormattedExceptionStackTrace(solutionResult.Exception!);
+			Text.FromString("Stack trace: ")
+				.WithColor(ConsoleColor.DarkGray)
+				.WithNewline()
+				.Write();
+			stackTrace.Write();
+		}
 		else {
 			Text text = new();
 			if (solutionResult.HasPart1)
-				text = text.WithString("\nPart 1: ")
+				text = text.WithString("Part 1: ")
 					.WithColor(ConsoleColor.DarkGray)
 					.Append(solutionResult.Solution.Part1)
 					.WithColor(ConsoleColor.White)
@@ -61,6 +70,36 @@ public static class SolutionWriter {
 					.WithNewline();
 			text.Write();
 		}
+	}
+
+	private static Text GetFormattedExceptionStackTrace(Exception exception) {
+		Text text = new();
+		var frames = new StackTrace(exception, true).GetFrames();
+		
+		foreach (var frame in frames) {
+			if (frame.GetMethod()?.DeclaringType == typeof(Runner)) break;
+
+			var method = frame.GetMethod();
+			string type = method?.DeclaringType?.FullName ?? "Unknown type";
+			string methodString = method?.ToString() ?? "unknown method";
+			string lineNumber = frame.GetFileLineNumber().ToString();
+			string? fileName = frame.GetFileName();
+
+			text = text
+				.Append(type)
+				.WithColor(ConsoleColor.White)
+				.Append(": method ")
+				.WithColor(ConsoleColor.DarkGray)
+				.Append(methodString)
+				.WithColor(ConsoleColor.White)
+				.Append(" line ")
+				.WithColor(ConsoleColor.DarkGray)
+				.Append(lineNumber)
+				.WithColor(ConsoleColor.Cyan)
+				.WithNewline();
+		}
+
+		return text;
 	}
 
 
