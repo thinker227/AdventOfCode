@@ -15,7 +15,14 @@ public static class SolutionWriter {
 	/// <param name="solutionResult">The
 	/// <see cref="Runner.SolutionExecutionResult"/> to write.</param>
 	public static void WriteSolution(Runner.SolutionExecutionResult solutionResult) {
-		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --")
+		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --\n")
+			.WithColor(ConsoleColor.White)
+			.WithNewline()
+			.Write();
+
+		Text.FromString($"Solver: ")
+			.WithColor(ConsoleColor.DarkGray)
+			.Append($"{solutionResult.Solver.GetType().FullName}")
 			.WithColor(ConsoleColor.White)
 			.WithNewline()
 			.Write();
@@ -30,8 +37,10 @@ public static class SolutionWriter {
 		if (solutionResult.HasException)
 			Text.FromString($"Exception ")
 				.WithColor(ConsoleColor.DarkGray)
-				.Append($"{solutionResult.Exception!.GetType().FullName}: ")
+				.Append($"{solutionResult.Exception!.GetType().FullName}")
 				.WithColor(ConsoleColor.White)
+				.Append(": ")
+				.WithColor(ConsoleColor.DarkGray)
 				.Append(solutionResult.Exception!.Message)
 				.WithColor(ConsoleColor.Red)
 				.WithNewline()
@@ -39,7 +48,7 @@ public static class SolutionWriter {
 		else {
 			Text text = new();
 			if (solutionResult.HasPart1)
-				text = text.WithString("Part 1: ")
+				text = text.WithString("\nPart 1: ")
 					.WithColor(ConsoleColor.DarkGray)
 					.Append(solutionResult.Solution.Part1)
 					.WithColor(ConsoleColor.White)
