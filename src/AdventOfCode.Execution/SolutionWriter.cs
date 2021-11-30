@@ -16,11 +16,13 @@ public static class SolutionWriter {
 	/// <param name="solutionResult">The
 	/// <see cref="Runner.SolutionExecutionResult"/> to write.</param>
 	public static void WriteSolution(Runner.SolutionExecutionResult solutionResult) {
+		// -- Day {day} --
 		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --\n")
 			.WithColor(ConsoleColor.White)
 			.WithNewline()
 			.Write();
 
+		// Solver: {solver type}
 		Text.FromString($"Solver: ")
 			.WithColor(ConsoleColor.DarkGray)
 			.Append($"{solutionResult.Solver.GetType().FullName}")
@@ -28,6 +30,7 @@ public static class SolutionWriter {
 			.WithNewline()
 			.Write();
 
+		// Elapsed time: {time}
 		Text.FromString("Elapsed time: ")
 			.WithColor(ConsoleColor.DarkGray)
 			.Append($"{solutionResult.ElapsedTime}\n")
@@ -36,6 +39,7 @@ public static class SolutionWriter {
 			.Write();
 
 		if (solutionResult.HasException) {
+			// Exception {exception type}: {exception message}
 			Text.FromString($"Exception ")
 				.WithColor(ConsoleColor.DarkGray)
 				.Append($"{solutionResult.Exception!.GetType().FullName}")
@@ -47,6 +51,7 @@ public static class SolutionWriter {
 				.WithNewline()
 				.Write();
 
+			// Stack trace: {stack trace}
 			var stackTrace = GetFormattedExceptionStackTrace(solutionResult.Exception!);
 			Text.FromString("Stack trace: ")
 				.WithColor(ConsoleColor.DarkGray)
@@ -57,12 +62,14 @@ public static class SolutionWriter {
 		else {
 			Text text = new();
 			if (solutionResult.HasPart1)
+				// Part 1: {solution}
 				text = text.WithString("Part 1: ")
 					.WithColor(ConsoleColor.DarkGray)
 					.Append(solutionResult.Solution.Part1)
 					.WithColor(ConsoleColor.White)
 					.WithNewline();
 			if (solutionResult.HasPart2)
+				// Part 2: {solution}
 				text = text.Append("Part 2: ")
 					.WithColor(ConsoleColor.DarkGray)
 					.Append(solutionResult.Solution.Part2)
@@ -85,6 +92,7 @@ public static class SolutionWriter {
 			string lineNumber = frame.GetFileLineNumber().ToString();
 			string? fileName = frame.GetFileName();
 
+			// {solver type}: method {method} line {line number}
 			text = text
 				.Append(type)
 				.WithColor(ConsoleColor.White)
