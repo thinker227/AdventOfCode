@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,34 @@ public static class Runner {
 	private const string solutionsAssemblyName = "AdventOfCode.Solutions";
 
 
+
+	/// <summary>
+	/// Runs the solver for a specified day.
+	/// </summary>
+	/// <param name="day">The day to run the solver of.</param>
+	/// <returns>A <see cref="SolutionExecutionResult"/> instance containing
+	/// information about the execution of the solver for <paramref name="day"/>.</returns>
+	public static SolutionExecutionResult RunSolver(ISolver solver, string? input) {
+		Solution solution = default;
+		TimeSpan elapsedTime;
+		Exception? exception = null;
+
+		Stopwatch sw = new();
+		sw.Start();
+
+		try {
+			solution = solver.Solve(input);
+		} catch (Exception e) {
+			exception = e;
+		} finally {
+			sw.Stop();
+			if (solver is IDisposable disposable)
+				disposable.Dispose();
+		}
+
+		elapsedTime = sw.Elapsed;
+		return new(solver, solution, elapsedTime, exception);
+	}
 
 	/// <summary>
 	/// Gets the input of a specified day.
@@ -73,6 +102,32 @@ public static class Runner {
 		return type
 			.GetInterfaces()
 			.Contains(typeof(ISolver));
+	}
+
+
+
+	/// <summary>
+	/// Contains information about the execution of an <see cref="ISolver"/>.
+	/// </summary>
+	/// <param name="Solver">The <see cref="ISolver"/> which generated the solution.</param>
+	/// <param name="Solution">The generated solution.</param>
+	/// <param name="ElapsedTime">The elapsed time the solution took to execute.</param>
+	/// <param name="Exception">The possible exception which occured during the solution execution.</param>
+	public readonly record struct SolutionExecutionResult(ISolver Solver, Solution Solution, TimeSpan ElapsedTime, Exception? Exception) {
+
+		/// <summary>
+		/// Whether an exception was raised during execution.
+		/// </summary>
+		public bool HasException => Exception is not null;
+		/// <summary>
+		/// Whether the solution has a part 1.
+		/// </summary>
+		public bool HasPart1 => Solution.Part1 is not null;
+		/// <summary>
+		/// Whether the solution has a part 2.
+		/// </summary>
+		public bool HasPart2 => Solution.Part2 is not null;
+
 	}
 
 }
