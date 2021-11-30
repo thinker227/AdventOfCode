@@ -86,6 +86,7 @@ public static class SolutionWriter {
 		foreach (var frame in frames) {
 			if (frame.GetMethod()?.DeclaringType == typeof(Runner)) break;
 
+			string indentation = new(' ', 4);
 			var method = frame.GetMethod();
 			string type = method?.DeclaringType?.FullName ?? "Unknown type";
 			string methodString = method?.ToString() ?? "unknown method";
@@ -94,6 +95,7 @@ public static class SolutionWriter {
 
 			// {solver type}: method {method} line {line number}
 			text = text
+				.Append(indentation)
 				.Append(type)
 				.WithColor(ConsoleColor.White)
 				.Append(": method ")
