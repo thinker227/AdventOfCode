@@ -32,6 +32,7 @@ public static class Runner {
 		sw.Start();
 
 		try {
+			if (Debugger.IsAttached) Debugger.Break();
 			solution = solver.Solve(input);
 		} catch (Exception e) {
 			exception = e;
