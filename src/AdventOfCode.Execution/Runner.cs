@@ -83,13 +83,13 @@ public static class Runner {
 				string typesString = string.Join(", ", solverTypes.Select(t => $"'{t.FullName}'"));
 				message = $"Multiple solvers types for day {day} were found: {typesString}.";
 			}
-			throw new InvalidOperationException(message);
+			throw new RunnerException(message);
 		}
 
 		var solverType = solverTypes[0];
 		var constructor = solverType.GetConstructor(Array.Empty<Type>());
 		if (constructor is null)
-			throw new InvalidOperationException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
+			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
 		var instance = constructor.Invoke(Array.Empty<object>());
 		return (ISolver)instance;
 	}
@@ -106,6 +106,29 @@ public static class Runner {
 	}
 
 
+
+	/// <summary>
+	/// Represents an exception caused by <see cref="Runner"/>.
+	/// </summary>
+	public sealed class RunnerException : Exception {
+
+		/// <summary>
+		/// Initializes a new <see cref="RunnerException"/> instance.
+		/// </summary>
+		public RunnerException() { }
+		/// <summary>
+		/// Initializes a new <see cref="RunnerException"/> instance.
+		/// </summary>
+		/// <param name="message">The message describing the exception.</param>
+		public RunnerException(string message) : base(message) { }
+		/// <summary>
+		/// Initializes a new <see cref="RunnerException"/> instance.
+		/// </summary>
+		/// <param name="message">The message describing the exception.</param>
+		/// <param name="inner">The exception which caused the current exception.</param>
+		public RunnerException(string message, Exception inner) : base(message, inner) { }
+
+	}
 
 	/// <summary>
 	/// Contains information about the execution of an <see cref="ISolver"/>.
