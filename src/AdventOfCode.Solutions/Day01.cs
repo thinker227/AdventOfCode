@@ -5,7 +5,7 @@ public sealed class Day01 : ISolver {
 
 	public Solution Solve(string? input) {
 		var nums = input!
-			.Split('\n')
+			.Split('\n', StringSplitOptions.RemoveEmptyEntries)
 			.Select(s => int.Parse(s.Trim()))
 			.View(3)
 			.Select(s => s.ToImmutableArray());
