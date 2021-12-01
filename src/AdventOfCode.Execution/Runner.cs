@@ -27,6 +27,7 @@ public static class Runner {
 		Solution solution = default;
 		TimeSpan elapsedTime;
 		Exception? exception = null;
+		bool debug = Debugger.IsAttached;
 
 		Stopwatch sw = new();
 		sw.Start();
@@ -42,7 +43,7 @@ public static class Runner {
 		}
 
 		elapsedTime = sw.Elapsed;
-		return new(solver, solution, elapsedTime, exception);
+		return new(solver, solution, elapsedTime, exception, debug);
 	}
 
 	/// <summary>
@@ -136,7 +137,7 @@ public static class Runner {
 	/// <param name="Solution">The generated solution.</param>
 	/// <param name="ElapsedTime">The elapsed time the solution took to execute.</param>
 	/// <param name="Exception">The possible exception which occured during the solution execution.</param>
-	public readonly record struct SolutionExecutionResult(ISolver Solver, Solution Solution, TimeSpan ElapsedTime, Exception? Exception) {
+	public readonly record struct SolutionExecutionResult(ISolver Solver, Solution Solution, TimeSpan ElapsedTime, Exception? Exception, bool Debug) {
 
 		/// <summary>
 		/// Whether an exception was raised during execution.

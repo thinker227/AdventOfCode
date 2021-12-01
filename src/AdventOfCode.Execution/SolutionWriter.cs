@@ -30,12 +30,16 @@ public static class SolutionWriter {
 			.WithNewline()
 			.Write();
 
-		// Elapsed time: {time}
-		Text.FromString("Elapsed time: ")
+		// Elapsed time: {time} (debug{?})
+		Text elapsed = Text.FromString("Elapsed time: ")
 			.WithColor(ConsoleColor.DarkGray)
-			.Append($"{solutionResult.ElapsedTime}\n")
-			.WithColor(ConsoleColor.Yellow)
-			.WithNewline()
+			.Append($"{solutionResult.ElapsedTime}")
+			.WithColor(ConsoleColor.Yellow);
+		if (solutionResult.Debug)
+			elapsed = elapsed
+				.Append(" (debug)")
+				.WithColor(ConsoleColor.Green);
+		elapsed.Append("\n\n")
 			.Write();
 
 		if (solutionResult.HasException) {
