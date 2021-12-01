@@ -16,7 +16,6 @@ namespace AdventOfCode.Execution;
 public static class Runner {
 
 	private const string inputPath = @"res\input";
-	private const string solutionsAssemblyName = "AdventOfCode.Solutions";
 	private const string sessionEnvVar = "AdventOfCodeSession";
 	private const string websiteDomain = ".adventofcode.com";
 	private const string sessionCookieName = "session";
@@ -110,16 +109,17 @@ public static class Runner {
 	}
 
 	/// <summary>
-	/// Gets the solver for a specified day.
+	/// Gets an <see cref="ISolver"/> for a specified day.
 	/// </summary>
 	/// <param name="day">The day to get the solver for.</param>
+	/// <param name="assembly">The <see cref="Assembly"/> to load the solver from.</param>
 	/// <returns>An <see cref="ISolver"/> for the specified day.</returns>
 	/// <exception cref="InvalidOperationException">
 	/// None or multiple solvers are found for the specified day or
 	/// the solver for the specified day does not contains a parameterless constructor.
 	/// </exception>
-	public static ISolver GetSolver(int day) {
-		var types = GetSolverTypes();
+	public static ISolver GetSolver(int day, Assembly assembly) {
+		var types = GetSolverTypes(assembly);
 		var solverTypes = types
 			.Where(t => t.GetCustomAttribute<SolverAttribute>()!.Day == day)
 			.ToArray();
@@ -141,9 +141,8 @@ public static class Runner {
 		var instance = constructor.Invoke(Array.Empty<object>());
 		return (ISolver)instance;
 	}
-	private static Type[] GetSolverTypes() =>
-		Assembly.Load(solutionsAssemblyName)
-			.GetTypes()
+	private static Type[] GetSolverTypes(Assembly assembly) =>
+		assembly.GetTypes()
 			.Where(IsSolverType)
 			.ToArray();
 	private static bool IsSolverType(Type type) {

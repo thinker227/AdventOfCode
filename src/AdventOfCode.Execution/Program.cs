@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using AdventOfCode.Execution;
 
 
@@ -12,7 +13,7 @@ if (args.Length > 0) {
 if (day is < 1 or > 25)
 	throw new FormatException($"Invalid day {day}.");
 
-var solver = Runner.GetSolver(day);
+var solver = Runner.GetSolver(day, Assembly.Load("AdventOfCode.Solutions"));
 var input = await Runner.GetInputAsync(day);
 var solutionResult = Runner.RunSolver(solver, input);
 
