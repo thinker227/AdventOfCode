@@ -7,17 +7,22 @@ public sealed class Day01 : ISolver {
 		var nums = input!
 			.Split('\n')
 			.Select(s => int.Parse(s.Trim()))
-			.ToImmutableArray();
+			.View(3)
+			.Select(s => s.ToImmutableArray());
+		var first = nums.First();
 
-		int largerCount = 0;
-		for (int i = 0; i < nums.Length; i++) {
-			if (i == 0) continue;
-			int current = nums[i];
-			int previous = nums[i - 1];
-			if (current > previous) largerCount++;
+		int p1 = 0; // Solution to part 1 only comparing individual elements
+		int p2 = 0;
+		IEnumerable<int>? previous = null;
+
+		if (first[1] > first[0]) p1++; // The first grouping has to be specially treated
+		foreach (var grouping in nums) {
+			if (grouping[2] > grouping[1]) p1++;
+			if (grouping.Sum() > previous?.Sum()) p2++;
+			previous = grouping;
 		}
 
-		return new(largerCount.ToString());
+		return new(p1.ToString(), p2.ToString());
 	}
 
 }
