@@ -22,7 +22,7 @@ public sealed class Day01 : ISolver {
 			previous = grouping;
 		}
 
-		return new(p1.ToString(), p2.ToString());
+		return new(p1, p2);
 	}
 
 }
