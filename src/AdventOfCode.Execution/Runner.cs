@@ -15,17 +15,6 @@ namespace AdventOfCode.Execution;
 /// </summary>
 public static class Runner {
 
-	private const string inputPath = @"res\input";
-	private const string sessionEnvVar = "AdventOfCodeSession";
-	private const string websiteDomain = ".adventofcode.com";
-	private const string sessionCookieName = "session";
-	private static string GetUrl(int day) =>
-		$"https://adventofcode.com/2021/day/{day}/input";
-	private static string GetFilePath(int day) =>
-		$@"{inputPath}\{day:D2}.txt";
-
-
-
 	/// <summary>
 	/// Runs the solver for a specified day.
 	/// </summary>
@@ -59,53 +48,16 @@ public static class Runner {
 	/// Asynchronously gets the input of a specified day.
 	/// </summary>
 	/// <param name="day">The day to get the input of.</param>
+	/// <param name="root">The input root directory.</param>
 	/// <returns>A <see cref="ReadOnlySpan{T}"/> of characters representing the input.</returns>
-	/// <exception cref="HttpRequestException">
-	/// The status code of the HTTP response from the AoC website is not a success.
+	/// <exception cref="FileNotFoundException">
+	/// No input file for <paramref name="day"/> is found.
 	/// </exception>
-	/// <exception cref="RunnerException">
-	/// No environment variable for the AoC website session was found.
-	/// </exception>
-	public static async Task<string?> GetInputAsync(int day) {
-		string path = GetFilePath(day);
-		return File.Exists(path) ?
-			await ReadInputAsync(day) :
-			await DownloadInputAsync(day);
-	}
-	private static async Task<string> ReadInputAsync(int day) {
-		string path = GetFilePath(day);
-		return await File.ReadAllTextAsync(path);
-	}
-	private static async Task WriteInputAsync(int day, string input) {
-		string path = GetFilePath(day);
-		await File.WriteAllTextAsync(path, input);
-	}
-	private static async Task<string> DownloadInputAsync(int day) {
-		string url = GetUrl(day);
-		string session = GetSession();
-		var cookies = new CookieContainer();
-		cookies.Add(new Cookie() {
-			Domain = websiteDomain,
-			Name = sessionCookieName,
-			Value = session
-		});
-		using var handler = new HttpClientHandler() {
-			CookieContainer = cookies
-		};
-		using HttpClient client = new(handler);
-
-		var response = await client.GetAsync(url);
-		if (!response.IsSuccessStatusCode)
-			throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
-		string input = await response.Content.ReadAsStringAsync();
-		await WriteInputAsync(day, input);
-		return input;
-	}
-	private static string GetSession() {
-		string? session = Environment.GetEnvironmentVariable(sessionEnvVar, EnvironmentVariableTarget.User);
-		if (session is null)
-			throw new RunnerException($"No environment variable '{sessionEnvVar}' was found.");
-		return session;
+	public static string GetInput(int day, string root) {
+		string path = $@"{root}\{day:D2}.txt";
+		if (!File.Exists(path))
+			throw new FileNotFoundException($"No input file for day {day} was found.", path);
+		return File.ReadAllText(path);
 	}
 
 	/// <summary>
