@@ -7,7 +7,7 @@ using AdventOfCode.Execution;
 
 var options = ExecutionOptions.GetOptions();
 
-int day = Runner.GetDay();
+int day = options.Day ?? Runner.GetDay();
 if (day is < 1 or > 25)
 	throw new FormatException($"Invalid day {day}.");
 

@@ -44,12 +44,9 @@ public static class Runner {
 	/// <summary>
 	/// Gets the current day.
 	/// </summary>
-	/// <returns>The current day as supplied by the command-line arguments
-	/// or <see cref="DateTime.Now"/>.</returns>
-	public static int GetDay() {
-		var options = ExecutionOptions.GetOptions();
-		return options.Day ?? DateTime.Now.Day;
-	}
+	/// <returns>The current day as supplied <see cref="DateTime.Now"/>.</returns>
+	public static int GetDay() =>
+		DateTime.Now.Day;
 
 	/// <summary>
 	/// Gets an <see cref="ISolver"/> for a specified day.
