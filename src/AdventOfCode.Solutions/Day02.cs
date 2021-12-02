@@ -12,7 +12,7 @@ public sealed class Day02 : ISolver {
 
 		foreach (var line in lines) {
 			var space = line.IndexOf(' ');
-			var number = int.Parse(line[(space + 1)..^0]);
+			var number = int.Parse(line[(space + 1)..]);
 			if (space == 2) number = -number;
 
 			if (space == 7) {
