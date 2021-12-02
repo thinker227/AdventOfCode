@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;	
 using AdventOfCode.Common;
@@ -75,21 +76,35 @@ public static class Runner {
 		}
 
 		var solverType = solverTypes[0];
-		var constructor = solverType.GetConstructor(Array.Empty<Type>());
-		if (constructor is null)
-			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
-		var instance = constructor.Invoke(Array.Empty<object>());
-		return (ISolver)instance;
+		var instance = CreateSolver(solverType);
+		return instance;
 	}
-	private static Type[] GetSolverTypes(Assembly assembly) =>
+	/// <summary>
+	/// Gets all solvers in a specified <see cref="Assembly"/>.
+	/// </summary>
+	/// <param name="assembly">The <see cref="Assembly"/> to get the solvers in.</param>
+	/// <returns>A collection of solvers in <paramref name="assembly"/>.</returns>
+	public static ImmutableArray<ISolver> GetAllSolvers(Assembly assembly) {
+		return GetSolverTypes(assembly)
+			.Select(t => CreateSolver(t))
+			.ToImmutableArray();
+	}
+	private static ImmutableArray<Type> GetSolverTypes(Assembly assembly) =>
 		assembly.GetTypes()
 			.Where(IsSolverType)
-			.ToArray();
+			.ToImmutableArray();
 	private static bool IsSolverType(Type type) {
 		if (type.GetCustomAttribute<SolverAttribute>() is null) return false;
 		return type
 			.GetInterfaces()
 			.Contains(typeof(ISolver));
+	}
+	private static ISolver CreateSolver(Type solverType) {
+		var constructor = solverType.GetConstructor(Array.Empty<Type>());
+		if (constructor is null)
+			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
+		var instance = constructor.Invoke(Array.Empty<object>());
+		return (ISolver)instance;
 	}
 
 	/// <summary>
