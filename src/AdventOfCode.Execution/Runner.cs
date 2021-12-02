@@ -57,7 +57,7 @@ public static class Runner {
 		var attribute = type.GetCustomAttribute<SolverAttribute>();
 		if (attribute is null)
 			throw new RunnerException($"Could not get input path for solver type '{type.FullName}' because it is not attributed with {nameof(SolverAttribute)}.");
-		var path = $@"\{attribute.InputPath}";
+		var path = $@"{Directory.GetCurrentDirectory()}\{attribute.InputPath}";
 		if (!File.Exists(path))
 			throw new FileNotFoundException($"No input file for solver type '{type.FullName}' was found.", path);
 		return File.ReadAllText(path);
