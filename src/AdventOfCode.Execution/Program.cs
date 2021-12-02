@@ -5,11 +5,9 @@ using AdventOfCode.Execution;
 
 
 
-ExecutionOptions options = null!;
-Parser.Default.ParseArguments<ExecutionOptions>(args)
-	.WithParsed(e => options = e);
+var options = ExecutionOptions.GetOptions();
 
-int day = options.Day ?? DateTime.Now.Day;
+int day = Runner.GetDay();
 if (day is < 1 or > 25)
 	throw new FormatException($"Invalid day {day}.");
 

@@ -42,25 +42,13 @@ public static class Runner {
 	}
 
 	/// <summary>
-	/// Gets the input of a specified solver.
+	/// Gets the current day.
 	/// </summary>
-	/// <param name="solver">The solver to get the input of.</param>
-	/// <returns>The input of <paramref name="solver"/>.</returns>
-	/// <exception cref="RunnerException">
-	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
-	/// </exception>
-	/// <exception cref="FileNotFoundException">
-	/// The file specified by <see cref="SolverAttribute.InputPath"/> does not exist.
-	/// </exception>
-	public static string GetInput(ISolver solver ) {
-		var type = solver.GetType();
-		var attribute = type.GetCustomAttribute<SolverAttribute>();
-		if (attribute is null)
-			throw new RunnerException($"Could not get input path for solver type '{type.FullName}' because it is not attributed with {nameof(SolverAttribute)}.");
-		var path = $@"{Directory.GetCurrentDirectory()}\{attribute.InputPath}";
-		if (!File.Exists(path))
-			throw new FileNotFoundException($"No input file for solver type '{type.FullName}' was found.", path);
-		return File.ReadAllText(path);
+	/// <returns>The current day as supplied by the command-line arguments
+	/// or <see cref="DateTime.Now"/>.</returns>
+	public static int GetDay() {
+		var options = ExecutionOptions.GetOptions();
+		return options.Day ?? DateTime.Now.Day;
 	}
 
 	/// <summary>
@@ -105,6 +93,28 @@ public static class Runner {
 		return type
 			.GetInterfaces()
 			.Contains(typeof(ISolver));
+	}
+
+	/// <summary>
+	/// Gets the input of a specified solver.
+	/// </summary>
+	/// <param name="solver">The solver to get the input of.</param>
+	/// <returns>The input of <paramref name="solver"/>.</returns>
+	/// <exception cref="RunnerException">
+	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// </exception>
+	/// <exception cref="FileNotFoundException">
+	/// The file specified by <see cref="SolverAttribute.InputPath"/> does not exist.
+	/// </exception>
+	public static string GetInput(ISolver solver) {
+		var type = solver.GetType();
+		var attribute = type.GetCustomAttribute<SolverAttribute>();
+		if (attribute is null)
+			throw new RunnerException($"Could not get input path for solver type '{type.FullName}' because it is not attributed with {nameof(SolverAttribute)}.");
+		var path = $@"{Directory.GetCurrentDirectory()}\{attribute.InputPath}";
+		if (!File.Exists(path))
+			throw new FileNotFoundException($"No input file for solver type '{type.FullName}' was found.", path);
+		return File.ReadAllText(path);
 	}
 
 
