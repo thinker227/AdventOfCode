@@ -6,18 +6,26 @@ public sealed class Day02 : ISolver {
 	public Solution Solve(string? input) {
 		var span = input!.AsSpan();
 		var lines = span.EnumerateLines();
-		var (horizontal, depth) = (0, 0);
+
+		// depth is part 1, accurateDepth is part 2
+		var (horizontal, depth, accurateDepth, aim) = (0, 0, 0, 0);
 
 		foreach (var line in lines) {
 			var space = line.IndexOf(' ');
 			var number = int.Parse(line[(space + 1)..^0]);
 			if (space == 2) number = -number;
 
-			if (space == 7) horizontal += number;
-			else depth += number;
+			if (space == 7) {
+				horizontal += number;
+				accurateDepth += aim * number;
+			}
+			else {
+				aim += number;
+				depth += number;
+			}
 		}
 
-		return new(horizontal * depth);
+		return new(horizontal * depth, horizontal * accurateDepth);
 	}
 
 }
