@@ -335,6 +335,11 @@ ASALocalRun/
 
 
 
+# VSCode
+.vscode/
+
+
+
 # Custom
 src/AdventOfCode.Execution/Properties/launchSettings.json
 [012][0123456789].txt
