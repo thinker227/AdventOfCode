@@ -13,10 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InputFiles Include="$(SolutionDir)\..\res\input\*.txt" />
+    <InputFiles Include="..\AdventOfCode.Solutions\input\*.txt" />
   </ItemGroup>
   <Target Name="CopyInputFiles" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(InputFiles)" DestinationFolder="$(TargetDir)\res\input" />
+    <Copy SourceFiles="@(InputFiles)" DestinationFolder="$(TargetDir)\input" />
   </Target>
 
 </Project>

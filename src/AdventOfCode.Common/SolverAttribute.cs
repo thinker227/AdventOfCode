@@ -16,6 +16,10 @@ public sealed class SolverAttribute : Attribute {
 	/// The day of the puzzle the solver solves.
 	/// </summary>
 	public int Day { get; }
+	/// <summary>
+	/// The file path to the input file of the solver.
+	/// </summary>
+	public string InputPath { get; }
 
 
 
@@ -23,8 +27,10 @@ public sealed class SolverAttribute : Attribute {
 	/// Initializes a new <see cref="SolverAttribute"/> instance.
 	/// </summary>
 	/// <param name="day">The day of the puzzle the solver solves.</param>
-	public SolverAttribute(int day) {
+	/// <param name="inputPath">The file path to the input file of the solver.</param>
+	public SolverAttribute(int day, string inputPath) {
 		Day = day;
+		InputPath = inputPath;
 	}
 
 }

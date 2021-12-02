@@ -2,10 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Http;
+using System.Reflection;	
 using AdventOfCode.Common;
 
 namespace AdventOfCode.Execution;
@@ -45,18 +42,24 @@ public static class Runner {
 	}
 
 	/// <summary>
-	/// Asynchronously gets the input of a specified day.
+	/// Gets the input of a specified solver.
 	/// </summary>
-	/// <param name="day">The day to get the input of.</param>
-	/// <param name="root">The input root directory.</param>
-	/// <returns>A <see cref="ReadOnlySpan{T}"/> of characters representing the input.</returns>
-	/// <exception cref="FileNotFoundException">
-	/// No input file for <paramref name="day"/> is found.
+	/// <param name="solver">The solver to get the input of.</param>
+	/// <returns>The input of <paramref name="solver"/>.</returns>
+	/// <exception cref="RunnerException">
+	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
-	public static string GetInput(int day, string root) {
-		string path = $@"{root}\{day:D2}.txt";
+	/// <exception cref="FileNotFoundException">
+	/// The file specified by <see cref="SolverAttribute.InputPath"/> does not exist.
+	/// </exception>
+	public static string GetInput(ISolver solver ) {
+		var type = solver.GetType();
+		var attribute = type.GetCustomAttribute<SolverAttribute>();
+		if (attribute is null)
+			throw new RunnerException($"Could not get input path for solver type '{type.FullName}' because it is not attributed with {nameof(SolverAttribute)}.");
+		var path = $@"\{attribute.InputPath}";
 		if (!File.Exists(path))
-			throw new FileNotFoundException($"No input file for day {day} was found.", path);
+			throw new FileNotFoundException($"No input file for solver type '{type.FullName}' was found.", path);
 		return File.ReadAllText(path);
 	}
 

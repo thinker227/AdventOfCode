@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode.Solutions;
 
-[Solver(1)]
+[Solver(1, @"input\01.txt")]
 public sealed class Day01 : ISolver {
 
 	public Solution Solve(string? input) {
