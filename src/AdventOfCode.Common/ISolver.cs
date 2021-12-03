@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace AdventOfCode.Common;
+﻿namespace AdventOfCode.Common;
 
 /// <summary>
-/// Represents a solver for a puzzle.
+/// Represents a solver for a puzzle calculating both its solutions simultaniously.
 /// </summary>
 /// <remarks>
 /// Types implementing <see cref="ISolver"/>
@@ -18,5 +16,29 @@ public interface ISolver {
 	/// <returns>A <see cref="Solution"/> instance
 	/// containing the solution of the puzzle.</returns>
 	Solution Solve(string? input);
+
+}
+
+/// <summary>
+/// Represents a solver for a puzzle calculating its solutions separately.
+/// </summary>
+/// <remarks>
+/// Types implementing <see cref="IDualSolver"/>
+/// should also be attributed with <see cref="SolverAttribute"/>.
+/// </remarks>
+public interface IDualSolver {
+
+	/// <summary>
+	/// Solves part 1 of the puzzle with a given input.
+	/// </summary>
+	/// <param name="input">The puzzle input.</param>
+	/// <returns>The solution of part 1 of the puzzle.</returns>
+	string? SolvePart1(string? input);
+	/// <summary>
+	/// Solves part 2 of the puzzle with a given input.
+	/// </summary>
+	/// <param name="input">The puzzle input.</param>
+	/// <returns>The solution of part 2 of the puzzle.</returns>
+	string? SolvePart2(string? input);
 
 }
