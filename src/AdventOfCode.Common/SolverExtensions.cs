@@ -11,23 +11,29 @@ public static class SolverExtensions {
 		if (solverDays.TryGetValue(type, out int value))
 			return value;
 
-		var attribute = type.GetCustomAttribute<SolverAttribute>();
-		if (attribute is null) throw new InvalidOperationException($"Solver type {type.FullName} is not attributed with {nameof(SolverAttribute)}.");
+		var attribute = GetSolverAttribute(type);
 		solverDays.Add(type, attribute.Day);
 		return attribute.Day;
 	}
 	/// <summary>
-	/// Gets the day of a specified solver.
+	/// Gets the day of a specified <see cref="ISolver"/>.
 	/// </summary>
+	/// <remarks>
+	/// If <paramref name="solver"/> is a <see cref="DualSolverWrapper"/>
+	/// then the day of the wrapped <see cref="IDualSolver"/> will be returned.
+	/// </remarks>
 	/// <param name="solver">The <see cref="ISolver"/> to get the day of.</param>
 	/// <returns>The day of <paramref name="solver"/>.</returns>
 	/// <exception cref="InvalidOperationException">
 	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
-	public static int GetDay(this ISolver solver) =>
-		GetDay(solver.GetType());
+	public static int GetDay(this ISolver solver) {
+		Type type = solver is DualSolverWrapper wrapper ?
+			wrapper.Solver.GetType() : solver.GetType();
+		return GetDay(type);
+	}
 	/// <summary>
-	/// Gets the day of a specified solver.
+	/// Gets the day of a specified solver <see cref="IDualSolver"/>.
 	/// </summary>
 	/// <param name="solver">The <see cref="IDualSolver"/> to get the day of.</param>
 	/// <returns>The day of <paramref name="solver"/>.</returns>
@@ -36,6 +42,52 @@ public static class SolverExtensions {
 	/// </exception>
 	public static int GetDay(this IDualSolver dualSolver) =>
 		GetDay(dualSolver.GetType());
+
+	private static SolverAttribute GetSolverAttribute(Type type) {
+		var attribute = type.GetCustomAttribute<SolverAttribute>();
+		if (attribute is null) throw new InvalidOperationException($"Solver type {type.FullName} is not attributed with {nameof(SolverAttribute)}.");
+		return attribute;
+	}
+	/// <summary>
+	/// Gets the <see cref="SolverAttribute"/> of a specified <see cref="ISolver"/>.
+	/// </summary>
+	/// <remarks>
+	/// If <paramref name="solver"/> is a <see cref="DualSolverWrapper"/>
+	/// then the <see cref="SolverAttribute"/> of the
+	/// wrapped <see cref="IDualSolver"/> will be returned.
+	/// </remarks>
+	/// <param name="solver">The <see cref="ISolver"/>
+	/// to get the <see cref="SolverAttribute"/> of.</param>
+	/// <returns>The <see cref="SolverAttribute"/> of <paramref name="solver"/>.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// </exception>
+	public static SolverAttribute GetSolverAttribute(this ISolver solver) {
+		Type type = GetSolverType(solver);
+		return GetSolverAttribute(type);
+	}
+	/// <summary>
+	/// Gets the <see cref="SolverAttribute"/> of a specified <see cref="ISolver"/>.
+	/// </summary>
+	/// <param name="dualSolver">The <see cref="ISolver"/>
+	/// to get the <see cref="SolverAttribute"/> of.</param>
+	/// <returns>The <see cref="SolverAttribute"/> of <paramref name="dualSolver"/>.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// <paramref name="dualSolver"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// </exception>
+	public static SolverAttribute GetSolverAttribute(this IDualSolver dualSolver) =>
+		GetSolverAttribute(dualSolver.GetType());
+
+	/// <summary>
+	/// Gets the <see cref="Type"/> of a specified <see cref="ISolver"/>.
+	/// </summary>
+	/// <param name="solver">The <see cref="ISolver"/> to get the type of.</param>
+	/// <returns>The type of <paramref name="solver"/>, or the type of the wrapped
+	/// <see cref="IDualSolver"/> if <paramref name="solver"/>
+	/// is a <see cref="DualSolverWrapper"/>.</returns>
+	public static Type GetSolverType(this ISolver solver) =>
+		solver is DualSolverWrapper wrapper ?
+			wrapper.Solver.GetType() : solver.GetType();
 
 	/// <summary>
 	/// Converts a <see cref="IDualSolver"/> to a <see cref="ISolver"/>.

@@ -1,9 +1,9 @@
-//namespace AdventOfCode.Solutions;
+namespace AdventOfCode.Solutions;
 
 [Solver(3, @"input\03.txt")]
-public sealed class Day03 : ISolver {
+public sealed class Day03 : IDualSolver {
     
-    public Solution Solve(string? input) {
+    public string? SolvePart1(string? input) {
         var span = input!.Trim().AsSpan();
         int width = span[..(span.IndexOf('\n') + 1)].Length; // Width of each line
         int bitCount = width - 2; // Amount of bits in each number (width excluding control characters)
@@ -27,7 +27,11 @@ public sealed class Day03 : ISolver {
         ushort epsilon = (ushort)(gamma ^ largest);
         int result = gamma * epsilon;
 
-        return new(result);
+		return result.ToString();
     }
+
+	public string? SolvePart2(string? input) {
+		throw new NotImplementedException();
+	}
 
 }

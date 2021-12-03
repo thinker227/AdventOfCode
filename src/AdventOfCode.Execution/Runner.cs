@@ -97,14 +97,15 @@ public static class Runner {
 		if (type.GetCustomAttribute<SolverAttribute>() is null) return false;
 		return type
 			.GetInterfaces()
-			.Contains(typeof(ISolver));
+			.Any(t => t == typeof(ISolver) || t == typeof(IDualSolver));
 	}
 	private static ISolver CreateSolver(Type solverType) {
 		var constructor = solverType.GetConstructor(Array.Empty<Type>());
 		if (constructor is null)
 			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
 		var instance = constructor.Invoke(Array.Empty<object>());
-		return (ISolver)instance;
+		return instance is ISolver solver ?
+			solver : ((IDualSolver)instance).ToSolver();
 	}
 
 	/// <summary>
@@ -119,10 +120,8 @@ public static class Runner {
 	/// The file specified by <see cref="SolverAttribute.InputPath"/> does not exist.
 	/// </exception>
 	public static string GetInput(ISolver solver) {
-		var type = solver.GetType();
-		var attribute = type.GetCustomAttribute<SolverAttribute>();
-		if (attribute is null)
-			throw new RunnerException($"Could not get input path for solver type '{type.FullName}' because it is not attributed with {nameof(SolverAttribute)}.");
+		var type = solver.GetSolverType();
+		var attribute = solver.GetSolverAttribute();
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 		var path = $@"{directory}\{attribute.InputPath}";
 		if (!File.Exists(path))
