@@ -11,7 +11,8 @@ int day = options.Day ?? Runner.GetDay();
 if (day is < 1 or > 25)
 	throw new FormatException($"Invalid day {day}.");
 
-var solver = Runner.GetSolver(day, Assembly.Load("AdventOfCode.Solutions"));
+var assembly = Assembly.Load("AdventOfCode.Solutions");
+var solver = Runner.GetSolver(day, assembly);
 string input = options.Input ?? Runner.GetInput(solver);
 var solutionResult = Runner.RunSolver(solver, input);
 
