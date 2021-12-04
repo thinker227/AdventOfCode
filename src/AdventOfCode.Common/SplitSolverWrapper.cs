@@ -22,7 +22,7 @@ public sealed class SplitSolverWrapper : ISolver {
 
 
 
-    public Solution Solve(string? input) =>
+    public Solution Solve(string input) =>
         new(Solver.SolvePart1(input), Solver.SolvePart2(input));
 
 }

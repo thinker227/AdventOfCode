@@ -3,8 +3,8 @@
 [Solver(2, @"input\02.txt")]
 public sealed class Day02 : ISolver {
 
-	public Solution Solve(string? input) {
-		var span = input!.AsSpan();
+	public Solution Solve(string input) {
+		var span = input.AsSpan();
 		var lines = span.EnumerateLines();
 
 		// depth is part 1, accurateDepth is part 2

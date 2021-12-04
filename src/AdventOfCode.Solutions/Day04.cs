@@ -3,8 +3,8 @@
 [Solver(4, @"input\04.txt")]
 public sealed class Day04 : ISplitSolver {
 
-	private static string[] SplitInput(string? input) =>
-		input!.Split("\r\n\r\n", StringSplitOptions.RemoveEmptyEntries);
+	private static string[] SplitInput(string input) =>
+		input.Split("\r\n\r\n", StringSplitOptions.RemoveEmptyEntries);
 	private static int[] GetSequence(string[] split) =>
 		split.First()
 			.Split(',')
@@ -21,7 +21,7 @@ public sealed class Day04 : ISplitSolver {
 				.ToArray())
 			.Select(b => new Board(b));
 
-	public string? SolvePart1(string? input) {
+	public string SolvePart1(string input) {
 		var split = SplitInput(input);
 		var sequence = GetSequence(split);
 		var boards = GetBoards(split).ToArray();
@@ -42,7 +42,7 @@ public sealed class Day04 : ISplitSolver {
 		return result.ToString();
 		throw new NotImplementedException();
 	}
-	public string? SolvePart2(string? input) {
+	public string SolvePart2(string input) {
 		var split = SplitInput(input);
 		var sequence = GetSequence(split);
 		var boards = GetBoards(split).ToList();

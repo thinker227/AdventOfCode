@@ -19,7 +19,7 @@ public static class Runner {
 	/// <param name="day">The day to run the solver of.</param>
 	/// <returns>A <see cref="SolutionExecutionResult"/> instance containing
 	/// information about the execution of the solver for <paramref name="day"/>.</returns>
-	public static SolutionExecutionResult RunSolver(ISolver solver, string? input) {
+	public static SolutionExecutionResult RunSolver(ISolver solver, string input) {
 		Solution solution = default;
 		TimeSpan elapsedTime;
 		Exception? exception = null;
