@@ -1,7 +1,7 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(3, @"input\03.txt")]
-public sealed class Day03 : IDualSolver {
+public sealed class Day03 : ISplitSolver {
     
     public string? SolvePart1(string? input) {
         var span = input!.Trim().AsSpan();

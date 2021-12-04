@@ -19,8 +19,8 @@ public static class SolverExtensions {
 	/// Gets the day of a specified <see cref="ISolver"/>.
 	/// </summary>
 	/// <remarks>
-	/// If <paramref name="solver"/> is a <see cref="DualSolverWrapper"/>
-	/// then the day of the wrapped <see cref="IDualSolver"/> will be returned.
+	/// If <paramref name="solver"/> is a <see cref="SplitSolverWrapper"/>
+	/// then the day of the wrapped <see cref="ISplitSolver"/> will be returned.
 	/// </remarks>
 	/// <param name="solver">The <see cref="ISolver"/> to get the day of.</param>
 	/// <returns>The day of <paramref name="solver"/>.</returns>
@@ -28,20 +28,20 @@ public static class SolverExtensions {
 	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
 	public static int GetDay(this ISolver solver) {
-		Type type = solver is DualSolverWrapper wrapper ?
+		Type type = solver is SplitSolverWrapper wrapper ?
 			wrapper.Solver.GetType() : solver.GetType();
 		return GetDay(type);
 	}
 	/// <summary>
-	/// Gets the day of a specified solver <see cref="IDualSolver"/>.
+	/// Gets the day of a specified solver <see cref="ISplitSolver"/>.
 	/// </summary>
-	/// <param name="solver">The <see cref="IDualSolver"/> to get the day of.</param>
+	/// <param name="solver">The <see cref="ISplitSolver"/> to get the day of.</param>
 	/// <returns>The day of <paramref name="solver"/>.</returns>
 	/// <exception cref="InvalidOperationException">
 	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
-	public static int GetDay(this IDualSolver dualSolver) =>
-		GetDay(dualSolver.GetType());
+	public static int GetDay(this ISplitSolver splitSolver) =>
+		GetDay(splitSolver.GetType());
 
 	private static SolverAttribute GetSolverAttribute(Type type) {
 		var attribute = type.GetCustomAttribute<SolverAttribute>();
@@ -52,9 +52,9 @@ public static class SolverExtensions {
 	/// Gets the <see cref="SolverAttribute"/> of a specified <see cref="ISolver"/>.
 	/// </summary>
 	/// <remarks>
-	/// If <paramref name="solver"/> is a <see cref="DualSolverWrapper"/>
+	/// If <paramref name="solver"/> is a <see cref="SplitSolverWrapper"/>
 	/// then the <see cref="SolverAttribute"/> of the
-	/// wrapped <see cref="IDualSolver"/> will be returned.
+	/// wrapped <see cref="ISplitSolver"/> will be returned.
 	/// </remarks>
 	/// <param name="solver">The <see cref="ISolver"/>
 	/// to get the <see cref="SolverAttribute"/> of.</param>
@@ -69,36 +69,36 @@ public static class SolverExtensions {
 	/// <summary>
 	/// Gets the <see cref="SolverAttribute"/> of a specified <see cref="ISolver"/>.
 	/// </summary>
-	/// <param name="dualSolver">The <see cref="ISolver"/>
+	/// <param name="splitSolver">The <see cref="ISolver"/>
 	/// to get the <see cref="SolverAttribute"/> of.</param>
-	/// <returns>The <see cref="SolverAttribute"/> of <paramref name="dualSolver"/>.</returns>
+	/// <returns>The <see cref="SolverAttribute"/> of <paramref name="splitSolver"/>.</returns>
 	/// <exception cref="InvalidOperationException">
-	/// <paramref name="dualSolver"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// <paramref name="splitSolver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
-	public static SolverAttribute GetSolverAttribute(this IDualSolver dualSolver) =>
-		GetSolverAttribute(dualSolver.GetType());
+	public static SolverAttribute GetSolverAttribute(this ISplitSolver splitSolver) =>
+		GetSolverAttribute(splitSolver.GetType());
 
 	/// <summary>
 	/// Gets the <see cref="Type"/> of a specified <see cref="ISolver"/>.
 	/// </summary>
 	/// <param name="solver">The <see cref="ISolver"/> to get the type of.</param>
 	/// <returns>The type of <paramref name="solver"/>, or the type of the wrapped
-	/// <see cref="IDualSolver"/> if <paramref name="solver"/>
-	/// is a <see cref="DualSolverWrapper"/>.</returns>
+	/// <see cref="ISplitSolver"/> if <paramref name="solver"/>
+	/// is a <see cref="SplitSolverWrapper"/>.</returns>
 	public static Type GetSolverType(this ISolver solver) =>
-		solver is DualSolverWrapper wrapper ?
+		solver is SplitSolverWrapper wrapper ?
 			wrapper.Solver.GetType() : solver.GetType();
 
 	/// <summary>
-	/// Converts a <see cref="IDualSolver"/> to a <see cref="ISolver"/>.
+	/// Converts a <see cref="ISplitSolver"/> to a <see cref="ISolver"/>.
 	/// </summary>
-	/// <param name="solver">The <see cref="IDualSolver"/> to convert.</param>
+	/// <param name="solver">The <see cref="ISplitSolver"/> to convert.</param>
 	/// <returns>An <see cref="ISolver"/> wrapper of
 	/// <paramref name="solver"/>.</returns>
 	/// <exception cref="InvalidOperationException">
 	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
-	public static ISolver ToSolver(this IDualSolver dualSolver) =>
-		new DualSolverWrapper(dualSolver);
+	public static ISolver ToSolver(this ISplitSolver splitSolver) =>
+		new SplitSolverWrapper(splitSolver);
 
 }

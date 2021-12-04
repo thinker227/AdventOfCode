@@ -7,7 +7,7 @@ namespace AdventOfCode.Common;
 /// </summary>
 /// <remarks>
 /// Types attributed with <see cref="SolverAttribute"/>
-/// should also implement <see cref="ISolver"/> or <see cref="IDualSolver"/>.
+/// should also implement <see cref="ISolver"/> or <see cref="ISplitSolver"/>.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = true, AllowMultiple = false)]
 public sealed class SolverAttribute : Attribute {

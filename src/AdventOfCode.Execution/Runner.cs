@@ -97,7 +97,7 @@ public static class Runner {
 		if (type.GetCustomAttribute<SolverAttribute>() is null) return false;
 		return type
 			.GetInterfaces()
-			.Any(t => t == typeof(ISolver) || t == typeof(IDualSolver));
+			.Any(t => t == typeof(ISolver) || t == typeof(ISplitSolver));
 	}
 	private static ISolver CreateSolver(Type solverType) {
 		var constructor = solverType.GetConstructor(Array.Empty<Type>());
@@ -105,7 +105,7 @@ public static class Runner {
 			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
 		var instance = constructor.Invoke(Array.Empty<object>());
 		return instance is ISolver solver ?
-			solver : ((IDualSolver)instance).ToSolver();
+			solver : ((ISplitSolver)instance).ToSolver();
 	}
 
 	/// <summary>

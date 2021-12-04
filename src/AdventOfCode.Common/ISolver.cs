@@ -23,10 +23,10 @@ public interface ISolver {
 /// Represents a solver for a puzzle calculating its solutions separately.
 /// </summary>
 /// <remarks>
-/// Types implementing <see cref="IDualSolver"/>
+/// Types implementing <see cref="ISplitSolver"/>
 /// should also be attributed with <see cref="SolverAttribute"/>.
 /// </remarks>
-public interface IDualSolver {
+public interface ISplitSolver {
 
 	/// <summary>
 	/// Solves part 1 of the puzzle with a given input.
