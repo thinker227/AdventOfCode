@@ -55,11 +55,26 @@ public static class Runner {
 	/// <param name="day">The day to get the solver for.</param>
 	/// <param name="assembly">The <see cref="Assembly"/> to load the solver from.</param>
 	/// <returns>An <see cref="ISolver"/> for the specified day.</returns>
-	/// <exception cref="InvalidOperationException">
-	/// None or multiple solvers are found for the specified day or
+	/// <exception cref="RunnerException">
+	/// None or multiple solvers are found for the specified day, or
 	/// the solver for the specified day does not contains a parameterless constructor.
 	/// </exception>
 	public static ISolver GetSolver(int day, Assembly assembly) {
+		var solverType = GetSolverType(day, assembly);
+		var instance = CreateSolver(solverType);
+		return instance;
+	}
+	/// <summary>
+	/// Get the <see cref="Type"/> of the solver for a specified day-
+	/// </summary>
+	/// <param name="day">The day to get the type of solver for.</param>
+	/// <param name="assembly">The <see cref="Assembly"/> to load the
+	/// type of the solver from.</param>
+	/// <returns>The <see cref="Type"/> of the solver for the specified day.</returns>
+	/// <exception cref="RunnerException">
+	/// None or multiple solver types are found for the specified day.
+	/// </exception>
+	public static Type GetSolverType(int day, Assembly assembly) {
 		var types = GetSolverTypes(assembly);
 		var solverTypes = types
 			.Where(t => t.GetCustomAttribute<SolverAttribute>()!.Day == day)
@@ -75,9 +90,7 @@ public static class Runner {
 			throw new RunnerException(message);
 		}
 
-		var solverType = solverTypes[0];
-		var instance = CreateSolver(solverType);
-		return instance;
+		return solverTypes[0];
 	}
 	/// <summary>
 	/// Gets all solvers in a specified <see cref="Assembly"/>.
@@ -95,37 +108,81 @@ public static class Runner {
 			.ToImmutableArray();
 	private static bool IsSolverType(Type type) {
 		if (type.GetCustomAttribute<SolverAttribute>() is null) return false;
-		return type
-			.GetInterfaces()
-			.Any(t => t == typeof(ISolver) || t == typeof(ISplitSolver));
+		return type.IsSolver();
 	}
-	private static ISolver CreateSolver(Type solverType) {
-		var constructor = solverType.GetConstructor(Array.Empty<Type>());
+	/// <summary>
+	/// Creates an <see cref="ISolver"/> from a specified <see cref="Type"/>.
+	/// </summary>
+	/// <param name="solverType">The type of solver to create.</param>
+	/// <returns>A new instance of <paramref name="solverType"/>.</returns>
+	/// <exception cref="RunnerException">
+	/// <paramref name="solverType"/> does not implement <see cref="ISolver"/>,
+	/// or <paramref name="solverType"/> does not contains a parameterless constructor.
+	/// </exception>
+	public static ISolver CreateSolver(Type solverType) {
+		if (!solverType.IsSingleSolver())
+			throw new RunnerException($"'{solverType.FullName}' does not implement {nameof(ISolver)}.");
+		var instance = (ISolver)CreateInstance(solverType);
+		return instance;
+	}
+	/// <summary>
+	/// Creates an <see cref="ISplitSolver"/> from a specified <see cref="Type"/>.
+	/// </summary>
+	/// <param name="solverType">The type of solver to create.</param>
+	/// <returns>A new instance of <paramref name="solverType"/>.</returns>
+	/// <exception cref="RunnerException">
+	/// <paramref name="solverType"/> does not implement <see cref="ISplitSolver"/>,
+	/// or <paramref name="solverType"/> does not contains a parameterless constructor.
+	/// </exception>
+	public static ISplitSolver CreateSplitSolver(Type solverType) {
+		if (!solverType.IsSplitSolver())
+			throw new RunnerException($"'{solverType.FullName}' does not implement {nameof(ISplitSolver)}.");
+		var instance = (ISplitSolver)CreateInstance(solverType);
+		return instance;
+	}
+	/// <summary>
+	/// Creates an <see cref="ISolver"/> or <see cref="SplitSolverWrapper"/>
+	/// from a specified <see cref="Type"/>.
+	/// </summary>
+	/// <param name="solverType">The type of solver to create.</param>
+	/// <returns>A new instance of <paramref name="solverType"/> or a
+	/// <see cref="SplitSolverWrapper"/> if <paramref name="solverType"/>
+	/// implements <see cref="ISplitSolver"/>.</returns>
+	/// <exception cref="RunnerException">
+	/// <paramref name="solverType"/> does not implement
+	/// <see cref="ISolver"/> or <see cref="ISplitSolver"/>,
+	/// or <paramref name="solverType"/> does not contains a parameterless constructor.
+	/// </exception>
+	public static ISolver CreateSolverOrWrapper(Type solverType) {
+		return solverType.IsSingleSolver() ?
+			CreateSolver(solverType) :
+			CreateSplitSolver(solverType).ToSolver();
+	}
+	private static object CreateInstance(Type type) {
+		var constructor = type.GetConstructor(Array.Empty<Type>());
 		if (constructor is null)
-			throw new RunnerException($"Type '{solverType.FullName}' does not contain a parameterless constructor.");
+			throw new RunnerException($"Type '{type.FullName}' does not contain a parameterless constructor.");
 		var instance = constructor.Invoke(Array.Empty<object>());
-		return instance is ISolver solver ?
-			solver : ((ISplitSolver)instance).ToSolver();
+		return instance;
 	}
 
 	/// <summary>
-	/// Gets the input of a specified solver.
+	/// Gets the input of a specified solver type.
 	/// </summary>
-	/// <param name="solver">The solver to get the input of.</param>
-	/// <returns>The input of <paramref name="solver"/>.</returns>
+	/// <param name="solverType">The solver to get the input of.</param>
+	/// <returns>The input of <paramref name="solverType"/>.</returns>
 	/// <exception cref="RunnerException">
-	/// <paramref name="solver"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// <paramref name="solverType"/> is not attributed with <see cref="SolverAttribute"/>.
 	/// </exception>
 	/// <exception cref="FileNotFoundException">
 	/// The file specified by <see cref="SolverAttribute.InputPath"/> does not exist.
 	/// </exception>
-	public static string GetInput(ISolver solver) {
-		var type = solver.GetSolverType();
-		var attribute = solver.GetSolverAttribute();
+	public static string GetInput(Type solverType) {
+		var attribute = solverType.GetSolverAttribute();
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 		var path = $@"{directory}\{attribute.InputPath}";
 		if (!File.Exists(path))
-			throw new FileNotFoundException($"No input file for solver type '{type.FullName}' was found.", path);
+			throw new FileNotFoundException($"No input file for solver type '{solverType.FullName}' was found.", path);
 		return File.ReadAllText(path);
 	}
 
