@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace AdventOfCode.Common;
@@ -43,7 +44,16 @@ public static class SolverExtensions {
 	public static int GetDay(this ISplitSolver splitSolver) =>
 		GetDay(splitSolver.GetType());
 
-	private static SolverAttribute GetSolverAttribute(Type type) {
+	/// <summary>
+	/// Gets the <see cref="SolverAttribute"/> of a specified type.
+	/// </summary>
+	/// <param name="solver">The type
+	/// to get the <see cref="SolverAttribute"/> of.</param>
+	/// <returns>The <see cref="SolverAttribute"/> of <paramref name="type"/>.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// <paramref name="type"/> is not attributed with <see cref="SolverAttribute"/>.
+	/// </exception>
+	public static SolverAttribute GetSolverAttribute(this Type type) {
 		var attribute = type.GetCustomAttribute<SolverAttribute>();
 		if (attribute is null) throw new InvalidOperationException($"Solver type {type.FullName} is not attributed with {nameof(SolverAttribute)}.");
 		return attribute;
@@ -77,6 +87,37 @@ public static class SolverExtensions {
 	/// </exception>
 	public static SolverAttribute GetSolverAttribute(this ISplitSolver splitSolver) =>
 		GetSolverAttribute(splitSolver.GetType());
+
+	/// <summary>
+	/// Gets whether a specified <see cref="Type"/> implements
+	/// either <see cref="ISolver"/> or <see cref="ISplitSolver"/>.
+	/// </summary>
+	/// <param name="type">The type to check.</param>
+	/// <returns>Whether <paramref name="type"/> implements
+	/// either <see cref="ISolver"/> or <see cref="ISplitSolver"/>.</returns>
+	public static bool IsSolver(this Type type) =>
+		type.GetInterfaces()
+			.Any(t => t == typeof(ISolver) || t == typeof(ISplitSolver));
+	/// <summary>
+	/// Gets whether a specified <see cref="Type"/> implements
+	/// <see cref="ISolver"/>.
+	/// </summary>
+	/// <param name="type">The type to check.</param>
+	/// <returns>Whether <paramref name="type"/> implements
+	/// <see cref="ISolver"/>.</returns>
+	public static bool IsSingleSolver(this Type type) =>
+		type.GetInterfaces()
+			.Contains(typeof(ISolver));
+	/// <summary>
+	/// Gets whether a specified <see cref="Type"/> implements
+	/// <see cref="ISplitSolver"/>.
+	/// </summary>
+	/// <param name="type">The type to check.</param>
+	/// <returns>Whether <paramref name="type"/> implements
+	/// <see cref="ISplitSolver"/>.</returns>
+	public static bool IsSplitSolver(this Type type) =>
+		type.GetInterfaces()
+			.Contains(typeof(ISplitSolver));
 
 	/// <summary>
 	/// Gets the <see cref="Type"/> of a specified <see cref="ISolver"/>.

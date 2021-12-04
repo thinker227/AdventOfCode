@@ -22,6 +22,8 @@ internal sealed class ExecutionOptions {
 	/// </summary>
 	[Option('i', "input", Required = false)]
 	public string? Input { get; private set; }
+	[Option('b', "benchmark", Required = false)]
+	public bool Benchmark { get; private set; }
 
 
 
