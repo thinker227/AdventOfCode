@@ -3,16 +3,34 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(5, @"input\05.txt")]
-public sealed class Day05 : ISolver {
+public sealed class Day05 : ISplitSolver {
 
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
+		var lines = GetLines(input)
+			.Where(l => l.IsAligned);
+		int result = GetFrequencies(lines);
+		return result;
+	}
+	public Part SolvePart2(string input) {
+		var lines = GetLines(input);
+		int result = GetFrequencies(lines);
+		return result;
+	}
+
+	private static IEnumerable<Line> GetLines(string input) {
 		const StringSplitOptions trimRemove =
 			StringSplitOptions.RemoveEmptyEntries |
 			StringSplitOptions.TrimEntries;
 		var linesRaw = input.Split('\n', trimRemove);
 		var lines = linesRaw.Select(l => l.Split("->", trimRemove))
-			.Select(l => new Line(ToPoint(l[0]), ToPoint(l[1])))
-			.Where(l => l.IsAligned);
+			.Select(l => new Line(ToPoint(l[0]), ToPoint(l[1])));
+		return lines;
+	}
+	private static Point ToPoint(string s) {
+		var split = s.Split(',');
+		return new(int.Parse(split[0]), int.Parse(split[1]));
+	}
+	private static int GetFrequencies(IEnumerable<Line> lines) {
 		var points = lines.SelectMany(l => l);
 
 		Dictionary<Point, int> frequencies = new();
@@ -24,11 +42,7 @@ public sealed class Day05 : ISolver {
 		int result = frequencies
 			.Where(v => v.Value >= 2)
 			.Count();
-		return new(result);
-	}
-	private static Point ToPoint(string s) {
-		var split = s.Split(',');
-		return new(int.Parse(split[0]), int.Parse(split[1]));
+		return result;
 	}
 
 
