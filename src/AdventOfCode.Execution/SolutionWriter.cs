@@ -68,14 +68,14 @@ public static class SolutionWriter {
 				// Part 1: {solution}
 				text = text.WithString("Part 1: ")
 					.WithColor(ConsoleColor.DarkGray)
-					.Append(solutionResult.Solution.Part1)
+					.Append(solutionResult.Part1)
 					.WithColor(ConsoleColor.White)
 					.WithNewline();
 			if (solutionResult.HasPart2)
 				// Part 2: {solution}
 				text = text.Append("Part 2: ")
 					.WithColor(ConsoleColor.DarkGray)
-					.Append(solutionResult.Solution.Part2)
+					.Append(solutionResult.Part2)
 					.WithColor(ConsoleColor.White)
 					.WithNewline();
 			text.Write();

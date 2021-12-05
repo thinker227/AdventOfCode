@@ -3,7 +3,7 @@
 [Solver(2, @"input\02.txt")]
 public sealed class Day02 : ISolver {
 
-	public Solution Solve(string input) {
+	public CombinedSolution Solve(string input) {
 		var span = input.AsSpan();
 		var lines = span.EnumerateLines();
 

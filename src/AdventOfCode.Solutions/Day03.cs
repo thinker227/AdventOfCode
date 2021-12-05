@@ -3,8 +3,8 @@ namespace AdventOfCode.Solutions;
 [Solver(3, @"input\03.txt")]
 public sealed class Day03 : ISplitSolver {
     
-    public string? SolvePart1(string input) {
         var span = input.Trim().AsSpan();
+    public Part SolvePart1(string input) {
         int width = span[..(span.IndexOf('\n') + 1)].Length; // Width of each line
         int bitCount = width - 2; // Amount of bits in each number (width excluding control characters)
         int length = (span!.Length + 2) / width; // Funky newline stuff
@@ -27,7 +27,7 @@ public sealed class Day03 : ISplitSolver {
         ushort epsilon = (ushort)(gamma ^ largest);
         int result = gamma * epsilon;
 
-		return result.ToString();
+		return result;
     }
 
 	public string? SolvePart2(string input) {

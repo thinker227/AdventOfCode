@@ -21,7 +21,7 @@ public sealed class Day04 : ISplitSolver {
 				.ToArray())
 			.Select(b => new Board(b));
 
-	public string SolvePart1(string input) {
+	public Part SolvePart1(string input) {
 		var split = SplitInput(input);
 		var sequence = GetSequence(split);
 		var boards = GetBoards(split).ToArray();
@@ -39,10 +39,10 @@ public sealed class Day04 : ISplitSolver {
 			}
 		}
 
-		return result.ToString();
+		return result;
 		throw new NotImplementedException();
 	}
-	public string SolvePart2(string input) {
+	public Part SolvePart2(string input) {
 		var split = SplitInput(input);
 		var sequence = GetSequence(split);
 		var boards = GetBoards(split).ToList();

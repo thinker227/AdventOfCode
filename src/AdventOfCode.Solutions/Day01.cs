@@ -3,7 +3,7 @@
 [Solver(1, @"input\01.txt")]
 public sealed class Day01 : ISolver {
 
-	public Solution Solve(string input) {
+	public CombinedSolution Solve(string input) {
 		var nums = input
 			.Split('\n', StringSplitOptions.RemoveEmptyEntries)
 			.Select(s => int.Parse(s.Trim()))

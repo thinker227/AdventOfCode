@@ -13,9 +13,9 @@ public interface ISolver {
 	/// Solves the puzzle with a given input.
 	/// </summary>
 	/// <param name="input">The puzzle input.</param>
-	/// <returns>A <see cref="Solution"/> instance
-	/// containing the solution of the puzzle.</returns>
-	Solution Solve(string input);
+	/// <returns>A <see cref="CombinedSolution"/> instance
+	/// containing the combined solution of the puzzle.</returns>
+	CombinedSolution Solve(string input);
 
 }
 
@@ -33,12 +33,12 @@ public interface ISplitSolver {
 	/// </summary>
 	/// <param name="input">The puzzle input.</param>
 	/// <returns>The solution of part 1 of the puzzle.</returns>
-	string? SolvePart1(string input);
+	Part SolvePart1(string input);
 	/// <summary>
 	/// Solves part 2 of the puzzle with a given input.
 	/// </summary>
 	/// <param name="input">The puzzle input.</param>
 	/// <returns>The solution of part 2 of the puzzle.</returns>
-	string? SolvePart2(string input);
+	Part SolvePart2(string input);
 
 }

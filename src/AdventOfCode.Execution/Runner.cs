@@ -20,16 +20,26 @@ public static class Runner {
 	/// <returns>A <see cref="SolutionExecutionResult"/> instance containing
 	/// information about the execution of the solver for <paramref name="day"/>.</returns>
 	public static SolutionExecutionResult RunSolver(ISolver solver, string input) {
-		Solution solution = default;
+		Part part1 = default;
+		Part part2 = default;
 		TimeSpan elapsedTime;
 		Exception? exception = null;
 		bool debug = Debugger.IsAttached;
+		ISplitSolver? splitSolver = solver is SplitSolverWrapper wrapper ?
+			wrapper.Solver : null;
 
 		Stopwatch sw = new();
 		sw.Start();
 
 		try {
-			solution = solver.Solve(input);
+			if (splitSolver is not null) {
+				part1 = splitSolver.SolvePart1(input);
+				part2 = splitSolver.SolvePart2(input);
+			} else {
+				var solution = solver.Solve(input);
+				part1 = solution.Part1;
+				part2 = solution.Part2;
+			}
 		} catch (Exception e) {
 			exception = e;
 		} finally {
@@ -39,7 +49,7 @@ public static class Runner {
 		}
 
 		elapsedTime = sw.Elapsed;
-		return new(solver, solution, elapsedTime, exception, debug);
+		return new(solver, part1.ToString(), part2.ToString(), elapsedTime, exception, debug);
 	}
 
 	/// <summary>
@@ -218,7 +228,7 @@ public static class Runner {
 	/// <param name="Solution">The generated solution.</param>
 	/// <param name="ElapsedTime">The elapsed time the solution took to execute.</param>
 	/// <param name="Exception">The possible exception which occured during the solution execution.</param>
-	public readonly record struct SolutionExecutionResult(ISolver Solver, Solution Solution, TimeSpan ElapsedTime, Exception? Exception, bool Debug) {
+	public readonly record struct SolutionExecutionResult(ISolver Solver, string? Part1, string? Part2, TimeSpan ElapsedTime, Exception? Exception, bool Debug) {
 
 		/// <summary>
 		/// Whether an exception was raised during execution.
@@ -227,11 +237,11 @@ public static class Runner {
 		/// <summary>
 		/// Whether the solution has a part 1.
 		/// </summary>
-		public bool HasPart1 => Solution.Part1 is not null;
+		public bool HasPart1 => Part1 is not null;
 		/// <summary>
 		/// Whether the solution has a part 2.
 		/// </summary>
-		public bool HasPart2 => Solution.Part2 is not null;
+		public bool HasPart2 => Part2 is not null;
 
 	}
 
