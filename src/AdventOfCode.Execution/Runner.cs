@@ -17,39 +17,83 @@ public static class Runner {
 	/// Runs the solver for a specified day.
 	/// </summary>
 	/// <param name="day">The day to run the solver of.</param>
-	/// <returns>A <see cref="SolutionExecutionResult"/> instance containing
+	/// <returns>A <see cref="SolverExecutionResult"/> instance containing
 	/// information about the execution of the solver for <paramref name="day"/>.</returns>
-	public static SolutionExecutionResult RunSolver(ISolver solver, string input) {
-		Part part1 = default;
-		Part part2 = default;
-		TimeSpan elapsedTime;
-		Exception? exception = null;
+	public static SolverExecutionResult RunSolver(ISolver solver, string input) {
+		PartExecutionResult part1;
+		PartExecutionResult part2;
+		ExecutionType executionType;
 		bool debug = Debugger.IsAttached;
+
 		ISplitSolver? splitSolver = solver is SplitSolverWrapper wrapper ?
 			wrapper.Solver : null;
 
-		Stopwatch sw = new();
-		sw.Start();
-
-		try {
-			if (splitSolver is not null) {
-				part1 = splitSolver.SolvePart1(input);
-				part2 = splitSolver.SolvePart2(input);
-			} else {
-				var solution = solver.Solve(input);
-				part1 = solution.Part1;
-				part2 = solution.Part2;
-			}
-		} catch (Exception e) {
-			exception = e;
-		} finally {
-			sw.Stop();
-			if (solver is IDisposable disposable)
-				disposable.Dispose();
+		if (splitSolver is null) {
+			executionType = ExecutionType.Combined;
+			(part1, part2) = GetSingleExecutionResult(solver, input);
+		} else {
+			executionType = ExecutionType.Split;
+			(part1, part2) = GetSplitExecutionResult(splitSolver, input);
 		}
 
-		elapsedTime = sw.Elapsed;
-		return new(solver, part1.ToString(), part2.ToString(), elapsedTime, exception, debug);
+		return new(solver, executionType, part1, part2, debug);
+	}
+	private static (PartExecutionResult part1, PartExecutionResult part2) GetSingleExecutionResult(ISolver solver, string input) {
+		CombinedSolution solution = default;
+		Exception? exception = null;
+		TimeSpan elapsed;
+		Stopwatch sw = new();
+
+		sw.Start();
+		try {
+			solution = solver.Solve(input);
+		} catch (Exception e) {
+			exception = e;
+		}
+		sw.Stop();
+		elapsed = sw.Elapsed;
+
+		if (solver is IDisposable disposable)
+			disposable.Dispose();
+
+		PartExecutionResult p1 = new(solution.Part1.ToString(), elapsed, exception);
+		PartExecutionResult p2 = new(solution.Part2.ToString(), elapsed, exception);
+		return (p1, p2);
+	}
+	private static (PartExecutionResult part1, PartExecutionResult part2) GetSplitExecutionResult(ISplitSolver splitSolver, string input) {
+		Part part1Solution = default;
+		Part part2Solution = default;
+		(Exception? part1, Exception? part2) exception = (null, null);
+		(TimeSpan part1, TimeSpan part2) elapsed;
+		Stopwatch sw = new();
+
+		sw.Start();
+		try {
+			part1Solution = splitSolver.SolvePart1(input);
+		}
+		catch (Exception e) {
+			exception.part1 = e;
+		}
+		sw.Stop();
+		elapsed.part1 = sw.Elapsed;
+
+		sw.Reset();
+		sw.Start();
+		try {
+			part2Solution = splitSolver.SolvePart1(input);
+		}
+		catch (Exception e) {
+			exception.part2 = e;
+		}
+		sw.Stop();
+		elapsed.part2 = sw.Elapsed;
+
+		if (splitSolver is IDisposable disposable)
+			disposable.Dispose();
+
+		PartExecutionResult p1 = new(part1Solution.ToString(), elapsed.part1, exception.part1);
+		PartExecutionResult p2 = new(part2Solution.ToString(), elapsed.part2, exception.part2);
+		return (p1, p2);
 	}
 
 	/// <summary>
@@ -222,27 +266,47 @@ public static class Runner {
 	}
 
 	/// <summary>
-	/// Contains information about the execution of an <see cref="ISolver"/>.
+	/// Contains information about the execution of a part solution.
 	/// </summary>
-	/// <param name="Solver">The <see cref="ISolver"/> which generated the solution.</param>
-	/// <param name="Solution">The generated solution.</param>
+	/// <param name="Solution">The string representation of the solution.</param>
 	/// <param name="ElapsedTime">The elapsed time the solution took to execute.</param>
-	/// <param name="Exception">The possible exception which occured during the solution execution.</param>
-	public readonly record struct SolutionExecutionResult(ISolver Solver, string? Part1, string? Part2, TimeSpan ElapsedTime, Exception? Exception, bool Debug) {
+	/// <param name="Exception">The possible exception which occured during execution.</param>
+	public readonly record struct PartExecutionResult(string? Solution, TimeSpan ElapsedTime, Exception? Exception) {
 
+		/// <summary>
+		/// Whether there is a solution.
+		/// </summary>
+		public bool HasSolution => Solution is not null;
 		/// <summary>
 		/// Whether an exception was raised during execution.
 		/// </summary>
 		public bool HasException => Exception is not null;
-		/// <summary>
-		/// Whether the solution has a part 1.
-		/// </summary>
-		public bool HasPart1 => Part1 is not null;
-		/// <summary>
-		/// Whether the solution has a part 2.
-		/// </summary>
-		public bool HasPart2 => Part2 is not null;
 
+	}
+
+	/// <summary>
+	/// Contains information about the execution of an <see cref="ISolver"/>.
+	/// </summary>
+	/// <param name="Solver">The <see cref="ISolver"/> which generated the solution.</param>
+	/// <param name="Part1">The information about the execution of part 1.
+	/// If <paramref name="Part2"/> is <see langword="null"/> then
+	/// contains information about the combined execution of part 1 and part 2.</param>
+	/// <param name="Part2">The solution to part 1 of the puzzle.</param>
+	/// <param name="Debug">Whether the solver was executed while a debugger was attached.</param>
+	public readonly record struct SolverExecutionResult(ISolver Solver, ExecutionType ExecutionType, PartExecutionResult Part1, PartExecutionResult Part2, bool Debug);
+
+	/// <summary>
+	/// Represents the type of execution of a <see cref="SolverExecutionResult"/>.
+	/// </summary>
+	public enum ExecutionType {
+		/// <summary>
+		/// The execution was a combined execution through an <see cref="ISolver"/>.
+		/// </summary>
+		Combined,
+		/// <summary>
+		/// The execution was a split execution through an <see cref="ISplitSolver"/>.
+		/// </summary>
+		Split
 	}
 
 }

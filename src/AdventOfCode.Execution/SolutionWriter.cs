@@ -6,18 +6,18 @@ namespace AdventOfCode.Execution;
 
 /// <summary>
 /// Contains methods to write a
-/// <see cref="Runner.SolutionExecutionResult"/> to the console.
+/// <see cref="Runner.SolverExecutionResult"/> to the console.
 /// </summary>
 public static class SolutionWriter {
 
 	/// <summary>
-	/// Writes a <see cref="Runner.SolutionExecutionResult"/> to the console.
+	/// Writes a <see cref="Runner.SolverExecutionResult"/> to the console.
 	/// </summary>
 	/// <param name="solutionResult">The
-	/// <see cref="Runner.SolutionExecutionResult"/> to write.</param>
-	public static void WriteSolution(Runner.SolutionExecutionResult solutionResult) {
+	/// <see cref="Runner.SolverExecutionResult"/> to write.</param>
+	public static void WriteSolution(Runner.SolverExecutionResult solutionResult) {
 		// -- Day {day} --
-		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --\n")
+		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --")
 			.WithColor(ConsoleColor.White)
 			.WithNewline()
 			.Write();
@@ -25,60 +25,15 @@ public static class SolutionWriter {
 		// Solver: {solver type}
 		Text.FromString($"Solver: ")
 			.WithColor(ConsoleColor.DarkGray)
-			.Append($"{solutionResult.Solver.GetType().FullName}")
+			.Append($"{solutionResult.Solver.GetSolverType().FullName}")
 			.WithColor(ConsoleColor.White)
 			.WithNewline()
 			.Write();
 
-		// Elapsed time: {time} (debug{?})
-		Text elapsed = Text.FromString("Elapsed time: ")
-			.WithColor(ConsoleColor.DarkGray)
-			.Append($"{solutionResult.ElapsedTime}")
-			.WithColor(ConsoleColor.Yellow);
-		if (solutionResult.Debug)
-			elapsed = elapsed
-				.Append(" (debug)")
-				.WithColor(ConsoleColor.Green);
-		elapsed.Append("\n\n")
-			.Write();
+		if (solutionResult.ExecutionType == Runner.ExecutionType.Combined) {
 
-		if (solutionResult.HasException) {
-			// Exception {exception type}: {exception message}
-			Text.FromString($"Exception ")
-				.WithColor(ConsoleColor.DarkGray)
-				.Append($"{solutionResult.Exception!.GetType().FullName}")
-				.WithColor(ConsoleColor.White)
-				.Append(": ")
-				.WithColor(ConsoleColor.DarkGray)
-				.Append(solutionResult.Exception!.Message)
-				.WithColor(ConsoleColor.Red)
-				.WithNewline()
-				.Write();
+		} else {
 
-			// Stack trace: {stack trace}
-			Text.FromString("Stack trace: ")
-				.WithColor(ConsoleColor.DarkGray)
-				.WithNewline()
-				.Write();
-			GetFormattedExceptionStackTrace(solutionResult.Exception!).Write();
-		}
-		else {
-			Text text = new();
-			if (solutionResult.HasPart1)
-				// Part 1: {solution}
-				text = text.WithString("Part 1: ")
-					.WithColor(ConsoleColor.DarkGray)
-					.Append(solutionResult.Part1)
-					.WithColor(ConsoleColor.White)
-					.WithNewline();
-			if (solutionResult.HasPart2)
-				// Part 2: {solution}
-				text = text.Append("Part 2: ")
-					.WithColor(ConsoleColor.DarkGray)
-					.Append(solutionResult.Part2)
-					.WithColor(ConsoleColor.White)
-					.WithNewline();
-			text.Write();
 		}
 	}
 
