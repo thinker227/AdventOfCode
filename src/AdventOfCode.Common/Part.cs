@@ -17,7 +17,11 @@ public enum PartType {
 	/// <summary>
 	/// <see cref="Part.Integer"/> is set.
 	/// </summary>
-	Int
+	Int,
+	/// <summary>
+	/// <see cref="Part.Ulong"/> is set.
+	/// </summary>
+	Ulong
 }
 
 /// <summary>
@@ -41,6 +45,10 @@ public readonly ref struct Part {
 	/// The integer representation of this part.
 	/// </summary>
 	public int Integer { get; } = default;
+	/// <summary>
+	/// The unsigned long representation of this part.
+	/// </summary>
+	public ulong Ulong { get; } = default;
 
 
 
@@ -60,6 +68,14 @@ public readonly ref struct Part {
 		Type = PartType.Int;
 		Integer = integer;
 	}
+	/// <summary>
+	/// Initializes a new <see cref="Part"/> instance.
+	/// </summary>
+	/// <param name="uLong">The integer representation of the part.</param>
+	public Part(ulong @ulong) {
+		Type = PartType.Ulong;
+		Ulong = @ulong;
+	}
 
 
 
@@ -77,6 +93,7 @@ public readonly ref struct Part {
 			PartType.None => null,
 			PartType.CharSpan => new string(CharSpan),
 			PartType.Int => Integer.ToString(),
+			PartType.Ulong => Ulong.ToString(),
 			_ => throw new InvalidOperationException()
 		};
 
@@ -101,6 +118,12 @@ public readonly ref struct Part {
 	/// <param name="integer">The integer representation of the part.</param>
 	public static implicit operator Part(int integer) =>
 		new(integer);
+		/// <summary>
+	/// Implicitly converts an <see cref="ulong"/> to a <see cref="Part"/> instance.
+	/// </summary>
+	/// <param name="ulong">The integer representation of the part.</param>
+	public static implicit operator Part(ulong @ulong) =>
+		new(@ulong);
 
 }
 
