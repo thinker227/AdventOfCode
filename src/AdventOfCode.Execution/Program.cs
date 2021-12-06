@@ -4,17 +4,20 @@ using AdventOfCode.Execution;
 
 
 
-var options = ExecutionOptions.GetOptions();
+var executionOptions = ExecutionOptions.GetOptions(args);
+if (executionOptions.Init is not null)
+	return;
+ExecutionOptions.RunOptions? runOptions = executionOptions.Run;
 
-int day = options.Day ?? Runner.GetDay();
+int day = runOptions?.Day ?? Runner.GetDay();
 if (day is < 1 or > 25)
 	throw new FormatException($"Invalid day {day}.");
 
 var assembly = Assembly.Load("AdventOfCode.Solutions");
 var solverType = Runner.GetSolverType(day, assembly);
-string input = options.Input ?? Runner.GetInput(solverType);
+string input = runOptions?.Input ?? Runner.GetInput(solverType);
 
-if (options.Benchmark) {
+if (runOptions?.Benchmark ?? false) {
 	SolverBenchmarkRunner.RunBenchmarks(solverType, input);
 	return;
 }
