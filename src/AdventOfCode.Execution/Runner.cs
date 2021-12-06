@@ -80,7 +80,7 @@ public static class Runner {
 		sw.Reset();
 		sw.Start();
 		try {
-			part2Solution = splitSolver.SolvePart1(input);
+			part2Solution = splitSolver.SolvePart2(input);
 		}
 		catch (Exception e) {
 			exception.part2 = e;
