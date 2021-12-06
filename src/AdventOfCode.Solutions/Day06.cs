@@ -1,15 +1,26 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(6, @"input\06.txt")]
-public sealed class Day06 : ISolver {
+public sealed class Day06 : ISplitSolver {
 
-    public CombinedSolution Solve(string input) {
-        const int generations = 80;
-        var fishCounts = new int[10];
+    public Part SolvePart1(string input) {
+        var startFishes = ParseInput(input);
+        ulong result = Simulate(80, startFishes);
+        return result;
+    }
+    public Part SolvePart2(string input) {
+        var startFishes = ParseInput(input);
+        ulong result = Simulate(256, startFishes);
+        return result;
+    }
 
-        var startNums = input.Split(',')
-            .Select(int.Parse);
-        foreach (int n in startNums)
+    private static int[] ParseInput(string input) =>
+        input.Split(',').Select(int.Parse).ToArray();
+
+    private static ulong Simulate(int generations, int[] startFishes) {
+        var fishCounts = new ulong[10];
+
+        foreach (int n in startFishes)
             fishCounts[n]++;
 
         for (int generation = 1; generation <= generations; generation++) {
@@ -20,10 +31,10 @@ public sealed class Day06 : ISolver {
             fishCounts[9] = 0;
         }
 
-        int result = fishCounts.Sum();
-        return new(result);
-
-        throw new NotImplementedException();
+        ulong result = 0;
+        for (int i = 0; i < fishCounts.Length; i++)
+            result += fishCounts[i];
+        return result;
     }
 
 }
