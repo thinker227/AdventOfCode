@@ -1,27 +1,29 @@
-namespace AdventOfCode.Solutions;
+// namespace AdventOfCode.Solutions;
 
 [Solver(6, @"input\06.txt")]
 public sealed class Day06 : ISplitSolver {
 
     public Part SolvePart1(string input) {
-        var startFishes = ParseInput(input);
-        ulong result = Simulate(80, startFishes);
+        ulong result = Simulate(80, input);
         return result;
     }
     public Part SolvePart2(string input) {
-        var startFishes = ParseInput(input);
-        ulong result = Simulate(256, startFishes);
+        ulong result = Simulate(256, input);
         return result;
     }
 
-    private static int[] ParseInput(string input) =>
-        input.Split(',').Select(int.Parse).ToArray();
+    private static ulong Simulate(int generations, string nums) {
+        Span<ulong> fishCounts = stackalloc ulong[10];
 
-    private static ulong Simulate(int generations, int[] startFishes) {
-        var fishCounts = new ulong[10];
-
-        foreach (int n in startFishes)
-            fishCounts[n]++;
+        unsafe {
+            fixed (char* c = nums) {
+                IntReader reader = new(c, nums.Length);
+                while (!reader.AtEnd) {
+                    int n = reader.Next();
+                    fishCounts[n]++;
+                }
+            }
+        }
 
         for (int generation = 1; generation <= generations; generation++) {
             fishCounts[7] += fishCounts[0];
