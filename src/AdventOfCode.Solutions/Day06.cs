@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace AdventOfCode.Solutions;
 
 [Solver(6, @"input\06.txt")]
@@ -12,6 +14,7 @@ public sealed class Day06 : ISplitSolver {
         return result;
     }
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong Simulate(int generations, string nums) {
         const int newbornDelay = 2; // The additional delay before newborn fish can reproduce
         const int reproductionRate = 7; // The rate at which fish reproduce
@@ -39,12 +42,11 @@ public sealed class Day06 : ISplitSolver {
             // Shift the entire array one step backwards
             for (int i = 0; i < spanLength - 1; i++)
                 fishes[i] = fishes[i + 1];
-            fishes[newbornIndex] = 0;
 
             // Spawn one new fish with the standard reproduction rate
             fishes[reproductionRate - 1] += reproductionCount;
             // Spawn one new fish with the standard repreoduction rate plus the additional newborn delay
-            fishes[newbornIndex] += reproductionCount;
+            fishes[newbornIndex] = reproductionCount;
         }
 
         ulong result = 0;
