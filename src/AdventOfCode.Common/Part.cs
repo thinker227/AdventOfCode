@@ -135,19 +135,19 @@ public readonly ref struct CombinedSolution {
 	/// <summary>
 	/// The solution to part 1 of the puzzle.
 	/// </summary>
-	public Part Part1 { get; } = default;
+	public Part Part1 { get; }
 	/// <summary>
 	/// The solution to part 2 of the puzzle.
 	/// </summary>
-	public Part Part2 { get; } = default;
+	public Part Part2 { get; }
 	/// <summary>
 	/// Whether <see cref="Part1"/> is set.
 	/// </summary>
-	public bool HasPart1 { get; } = false;
+	public bool HasPart1 => Part1.HasSolution;
 	/// <summary>
 	/// Whether <see cref="Part2"/> is set.
 	/// </summary>
-	public bool HasPart2 { get; } = false;
+	public bool HasPart2 => Part2.HasSolution;
 
 
 
@@ -157,7 +157,7 @@ public readonly ref struct CombinedSolution {
 	/// <param name="part1">The solution to part 1.</param>
 	public CombinedSolution(Part part1) {
 		Part1 = part1;
-		HasPart1 = true;
+		Part2 = default;
 	}
 	/// <summary>
 	/// Initializes a new <see cref="CombinedSolution"/> instance.
@@ -167,68 +167,6 @@ public readonly ref struct CombinedSolution {
 	public CombinedSolution(Part part1, Part part2) {
 		Part1 = part1;
 		Part2 = part2;
-		HasPart1 = true;
-		HasPart2 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The char span representation of the solution to part 1.</param>
-	public CombinedSolution(ReadOnlySpan<char> part1) {
-		Part1 = new(part1);
-		HasPart1 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The integer representation of the solution to part 1.</param>
-	public CombinedSolution(int part1) {
-		Part1 = new(part1);
-		HasPart1 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The char span representation of the solution to part 1.</param>
-	/// <param name="part2">The char span representation of the solution to part 2.</param>
-	public CombinedSolution(ReadOnlySpan<char> part1, ReadOnlySpan<char> part2) {
-		Part1 = new(part1);
-		Part2 = new(part2);
-		HasPart1 = true;
-		HasPart2 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The char span representation of the solution to part 1.</param>
-	/// <param name="part2">The integer representation of the solution to part 2.</param>
-	public CombinedSolution(ReadOnlySpan<char> part1, int part2) {
-		Part1 = new(part1);
-		Part2 = new(part2);
-		HasPart1 = true;
-		HasPart2 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The integer representation of the solution to part 1.</param>
-	/// <param name="part2">The char span representation of the solution to part 2.</param>
-	public CombinedSolution(int part1, ReadOnlySpan<char> part2) {
-		Part1 = new(part1);
-		Part2 = new(part2);
-		HasPart1 = true;
-		HasPart2 = true;
-	}
-	/// <summary>
-	/// Initializes a new <see cref="CombinedSolution"/> instance.
-	/// </summary>
-	/// <param name="part1">The integer representation of the solution to part 1.</param>
-	/// <param name="part2">The integer representation of the solution to part 2.</param>
-	public CombinedSolution(int part1, int part2) {
-		Part1 = new(part1);
-		Part2 = new(part2);
-		HasPart1 = true;
-		HasPart2 = true;
 	}
 
 }
