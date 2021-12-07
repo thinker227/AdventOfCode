@@ -240,6 +240,14 @@ public static class Runner {
 		return File.ReadAllText(path);
 	}
 
+	/// <summary>
+	/// Gets a <see cref="Uri"/> to the AoC website page for the specified day.
+	/// </summary>
+	/// <param name="day">The day to get the Uri for.</param>
+	/// <returns>A <see cref="Uri"/> to the AoC page for <paramref name="day"/>.</returns>
+	public static Uri GetWebsiteUri(int day) =>
+		new($"https://adventofcode.com/2021/day/{day}");
+
 
 
 	/// <summary>

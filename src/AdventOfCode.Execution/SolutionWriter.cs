@@ -27,7 +27,8 @@ public static class SolutionWriter {
 	/// <see cref="Runner.SolverExecutionResult"/> to write.</param>
 	public static void WriteSolution(Runner.SolverExecutionResult solutionResult) {
 		// -- Day {day} --
-		Text.FromString($"-- Day {solutionResult.Solver.GetDay()} --")
+		int day = solutionResult.Solver.GetDay();
+		Text.FromString($"-- Day {day} --")
 			.WithColor(ConsoleColor.White)
 			.WithNewline()
 			.Write();
@@ -40,7 +41,16 @@ public static class SolutionWriter {
 			.WithNewline()
 			.Write();
 
+		// Input: "{input (...)?}"
 		GetFormattedInput(solutionResult.Input)
+			.Write();
+
+		// Website: {uri}
+		Text.FromString("Website: ")
+			.WithColor(ConsoleColor.DarkGray)
+			.Append(Runner.GetWebsiteUri(day).ToString())
+			.WithColor(ConsoleColor.White)
+			.WithNewline()
 			.Append("\n")
 			.Write();
 
@@ -80,18 +90,21 @@ public static class SolutionWriter {
 
 	private static Text GetFormattedInput(string input) {
 		const int maxInputLength = 80;
-		string formattedInput = input.Length > maxInputLength ?
-			formattedInput = $"{input[..(maxInputLength - 4)]} ..." :
-			input;
-		formattedInput = formattedInput.Replace("\n", "\\n");
+		string formattedInput = input.Replace("\n", "\\n");
+		bool overflow = formattedInput.Length > maxInputLength;
+		formattedInput = overflow ?
+			formattedInput[..(maxInputLength - 3)] : formattedInput;
 		formattedInput = string.Concat(formattedInput
 			.Where(c => !char.IsControl(c)));
 
+		Text overflowText = Text.FromString("...")
+			.WithColor(ConsoleColor.DarkGray);
 		// Input: {formatted input}
 		return Text.FromString("Input: \"")
 			.WithColor(ConsoleColor.DarkGray)
 			.Append(formattedInput)
 			.WithColor(ConsoleColor.White)
+			.Append(overflow ? overflowText : null)
 			.Append("\"")
 			.WithColor(ConsoleColor.DarkGray)
 			.WithNewline();
@@ -201,7 +214,8 @@ public static class SolutionWriter {
 			newline = true;
 			return this;
 		}
-		public Text Append(Text text) {
+		public Text Append(Text? text) {
+			if (text is null) return this;
 			text.Root().parent = this;
 			return text;
 		}
