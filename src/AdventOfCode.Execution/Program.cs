@@ -5,8 +5,10 @@ using AdventOfCode.Execution;
 
 
 var executionOptions = ExecutionOptions.GetOptions(args);
-if (executionOptions.Init is not null)
+if (executionOptions.Init is not null) {
+	Initializer.Initialize(executionOptions.Init);
 	return;
+}
 ExecutionOptions.RunOptions? runOptions = executionOptions.Run;
 
 int day = runOptions?.Day ?? Runner.GetDay();

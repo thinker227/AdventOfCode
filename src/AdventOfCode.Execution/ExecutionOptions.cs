@@ -43,15 +43,30 @@ internal sealed class ExecutionOptions {
 		[Value(0, Required = true)]
 		public int Day { get; private set; }
 		/// <summary>
+		/// Whether to initialize a split solver.
+		/// </summary>
+		[Option('s', "splitsolver")]
+		public bool SplitSolver { get; private set; }
+		/// <summary>
 		/// The class name of the class to initialize.
 		/// </summary>
-		[Option("classname")]
+		[Option('c', "classname")]
 		public string? ClassName { get; private set; }
 		/// <summary>
-		/// The file name for the input file to initialize.
+		/// The namespace of the class.
 		/// </summary>
-		[Option("inputfilename")]
-		public string? InputFileName { get; private set; }
+		[Option('n', "namespace")]
+		public string? Namespace { get; private set; }
+		/// <summary>
+		/// The file name for the class.
+		/// </summary>
+		[Option("solverfilename")]
+		public string? SolverFileName { get; private set; }
+		/// <summary>
+		/// The file path for the input file to initialize.
+		/// </summary>
+		[Option("inputfilepath")]
+		public string? InputFilePath { get; private set; }
 		/// <summary>
 		/// Whether to download the input for the day.
 		/// </summary>
