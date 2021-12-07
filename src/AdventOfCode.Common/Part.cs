@@ -90,7 +90,7 @@ public readonly ref struct Part {
 	/// </exception>
 	public override string? ToString() =>
 		Type switch {
-			PartType.None => null,
+			PartType.None => "none",
 			PartType.CharSpan => new string(CharSpan),
 			PartType.Int => Integer.ToString(),
 			PartType.Ulong => Ulong.ToString(),
@@ -118,7 +118,7 @@ public readonly ref struct Part {
 	/// <param name="integer">The integer representation of the part.</param>
 	public static implicit operator Part(int integer) =>
 		new(integer);
-		/// <summary>
+	/// <summary>
 	/// Implicitly converts an <see cref="ulong"/> to a <see cref="Part"/> instance.
 	/// </summary>
 	/// <param name="ulong">The integer representation of the part.</param>
@@ -168,5 +168,14 @@ public readonly ref struct CombinedSolution {
 		Part1 = part1;
 		Part2 = part2;
 	}
+
+
+
+	public override string? ToString() =>
+		HasPart1 || HasPart2 ?
+		(HasPart1 ? $"(1: {Part1.ToString()})" : string.Empty) +
+		(HasPart1 && HasPart2 ? " " : string.Empty) +
+		(HasPart2 ? $"(2: {Part2.ToString()})" : string.Empty) :
+		"none";
 
 }
