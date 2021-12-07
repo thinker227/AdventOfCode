@@ -10,6 +10,15 @@ namespace AdventOfCode.Execution;
 /// </summary>
 public static class SolutionWriter {
 
+	/* Color legend
+	White:		Titles and important text
+	DarkGray:	Labels and separation
+	Yellow:		Solutions
+	Magenta:	Type names
+	Cyan:		Numbers
+	Red:		Errors
+	*/
+
 	/// <summary>
 	/// Writes a <see cref="Runner.SolverExecutionResult"/> to the console.
 	/// </summary>
@@ -25,22 +34,79 @@ public static class SolutionWriter {
 		// Solver: {solver type}
 		Text.FromString($"Solver: ")
 			.WithColor(ConsoleColor.DarkGray)
-			.Append($"{solutionResult.Solver.GetSolverType().FullName}")
-			.WithColor(ConsoleColor.White)
+			.Append($"{solutionResult.Solver.GetSolverType().FullName}\n")
+			.WithColor(ConsoleColor.Magenta)
 			.WithNewline()
 			.Write();
 
 		if (solutionResult.ExecutionType == Runner.ExecutionType.Combined) {
+			Text text = Text.FromString("Solutions:")
+					.WithColor(ConsoleColor.White)
+					.WithNewline();
+			var elapsed = GetFormattedElapsedTime(solutionResult.Part1.ElapsedTime);
 
+			if (solutionResult.Part1.HasException) {
+				// Solutions:
+				// {elapsed time}
+				// {exception}
+				text.Append(elapsed)
+					.Append(GetFormattedException(solutionResult.Part1.Exception!))
+					.Write();
+			} else {
+				// Solutions:
+				// {part 1}
+				// {part 2}
+				// {elapsed time}
+				text.Append(GetFormattedSolution(solutionResult.Part1.Solution, "Part 1"))
+					.Append(GetFormattedSolution(solutionResult.Part2.Solution, "Part 2"))
+					.Append(elapsed)
+					.Write();
+			}
 		} else {
-
+			// Part 1: {solution}
+			GetFormattedPart(solutionResult.Part1, 1)
+				.Append("\n")
+				.Write();
+			// Part 2: {solution}
+			GetFormattedPart(solutionResult.Part2, 2)
+				.Write();
 		}
 	}
 
+	private static Text GetFormattedElapsedTime(TimeSpan elapsed) {
+		// Elapsed time: {elapsed}
+		return Text.FromString("Elapsed time: ")
+			.WithColor(ConsoleColor.DarkGray)
+			.Append(elapsed.ToString())
+			.WithColor(ConsoleColor.Cyan)
+			.WithNewline();
+	}
+	private static Text GetFormattedSolution(string? solution, string solutionName) {
+		// {solution name}: {solution}
+		return Text.FromString($"{solutionName}: ")
+				.WithColor(ConsoleColor.DarkGray)
+				.Append(solution)
+				.WithColor(ConsoleColor.Yellow)
+				.WithNewline();
+	}
+	private static Text GetFormattedException(Exception exception) {
+		// Exception {type name}: {message}
+		// {stack trace}
+		return Text.FromString("Exception ")
+				.WithColor(ConsoleColor.DarkGray)
+				.Append(exception.GetType().FullName)
+				.WithColor(ConsoleColor.Magenta)
+				.Append(": ")
+				.WithColor(ConsoleColor.DarkGray)
+				.Append(exception.Message)
+				.WithColor(ConsoleColor.Red)
+				.WithNewline()
+				.Append(GetFormattedExceptionStackTrace(exception));
+	}
 	private static Text GetFormattedExceptionStackTrace(Exception exception) {
 		Text text = new();
 		var frames = new StackTrace(exception, true).GetFrames();
-		
+
 		foreach (var frame in frames) {
 			if (frame.GetMethod()?.DeclaringType == typeof(Runner)) break;
 
@@ -69,6 +135,25 @@ public static class SolutionWriter {
 
 		return text;
 	}
+	private static Text GetFormattedPart(Runner.PartExecutionResult executionResult, int part) {
+		// Part {part}:
+		Text text = Text.FromString($"Part {part}:")
+			.WithColor(ConsoleColor.White)
+			.WithNewline();
+		Text elapsed = GetFormattedElapsedTime(executionResult.ElapsedTime);
+
+		text = executionResult.HasException ?
+			// {elapsed time}
+			// {exception}
+			text.Append(elapsed)
+				.Append(GetFormattedException(executionResult.Exception!)) :
+			// {solution}
+			// {elapsed time}
+			text.Append(GetFormattedSolution(executionResult.Solution, "Solution"))
+				.Append(elapsed);
+
+		return text;
+	}
 
 
 
@@ -93,6 +178,10 @@ public static class SolutionWriter {
 			newline = true;
 			return this;
 		}
+		public Text Append(Text text) {
+			text.Root().parent = this;
+			return text;
+		}
 		public Text Append(string? str) {
 			Text appended = new();
 			appended.parent = this;
@@ -100,6 +189,8 @@ public static class SolutionWriter {
 			appended.color = color;
 			return appended;
 		}
+		public Text Root() =>
+			parent?.Root() ?? this;
 
 		public void Write() {
 			parent?.Write();
