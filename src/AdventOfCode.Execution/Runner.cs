@@ -36,7 +36,7 @@ public static class Runner {
 			(part1, part2) = GetSplitExecutionResult(splitSolver, input);
 		}
 
-		return new(solver, executionType, part1, part2, debug);
+		return new(solver, input, executionType, part1, part2, debug);
 	}
 	private static (PartExecutionResult part1, PartExecutionResult part2) GetSingleExecutionResult(ISolver solver, string input) {
 		CombinedSolution solution = default;
@@ -293,7 +293,7 @@ public static class Runner {
 	/// contains information about the combined execution of part 1 and part 2.</param>
 	/// <param name="Part2">The solution to part 1 of the puzzle.</param>
 	/// <param name="Debug">Whether the solver was executed while a debugger was attached.</param>
-	public readonly record struct SolverExecutionResult(ISolver Solver, ExecutionType ExecutionType, PartExecutionResult Part1, PartExecutionResult Part2, bool Debug);
+	public readonly record struct SolverExecutionResult(ISolver Solver, string Input, ExecutionType ExecutionType, PartExecutionResult Part1, PartExecutionResult Part2, bool Debug);
 
 	/// <summary>
 	/// Represents the type of execution of a <see cref="SolverExecutionResult"/>.

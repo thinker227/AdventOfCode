@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using AdventOfCode.Common;
 
 namespace AdventOfCode.Execution;
@@ -34,9 +35,13 @@ public static class SolutionWriter {
 		// Solver: {solver type}
 		Text.FromString($"Solver: ")
 			.WithColor(ConsoleColor.DarkGray)
-			.Append($"{solutionResult.Solver.GetSolverType().FullName}\n")
+			.Append($"{solutionResult.Solver.GetSolverType().FullName}")
 			.WithColor(ConsoleColor.Magenta)
 			.WithNewline()
+			.Write();
+
+		GetFormattedInput(solutionResult.Input)
+			.Append("\n")
 			.Write();
 
 		if (solutionResult.ExecutionType == Runner.ExecutionType.Combined) {
@@ -73,6 +78,24 @@ public static class SolutionWriter {
 		}
 	}
 
+	private static Text GetFormattedInput(string input) {
+		const int maxInputLength = 80;
+		string formattedInput = input.Length > maxInputLength ?
+			formattedInput = $"{input[..(maxInputLength - 4)]} ..." :
+			input;
+		formattedInput = formattedInput.Replace("\n", "\\n");
+		formattedInput = string.Concat(formattedInput
+			.Where(c => !char.IsControl(c)));
+
+		// Input: {formatted input}
+		return Text.FromString("Input: \"")
+			.WithColor(ConsoleColor.DarkGray)
+			.Append(formattedInput)
+			.WithColor(ConsoleColor.White)
+			.Append("\"")
+			.WithColor(ConsoleColor.DarkGray)
+			.WithNewline();
+	}
 	private static Text GetFormattedElapsedTime(TimeSpan elapsed) {
 		// Elapsed time: {elapsed}
 		return Text.FromString("Elapsed time: ")
@@ -121,7 +144,7 @@ public static class SolutionWriter {
 			text = text
 				.Append(indentation)
 				.Append(type)
-				.WithColor(ConsoleColor.White)
+				.WithColor(ConsoleColor.Magenta)
 				.Append(": method ")
 				.WithColor(ConsoleColor.DarkGray)
 				.Append(methodString)
