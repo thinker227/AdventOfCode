@@ -5,6 +5,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <AssemblyName>AdventOfCode</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
