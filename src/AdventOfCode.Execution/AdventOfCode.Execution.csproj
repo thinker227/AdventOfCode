@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-    <AssemblyName>AdventOfCode</AssemblyName>
+    <AssemblyName>$(AssemblyName)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
