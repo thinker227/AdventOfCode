@@ -1,23 +1,33 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(8, @"input\08.txt")]
-public sealed class Day08 : ISolver {
+public sealed class Day08 : ISplitSolver {
 
 	private const StringSplitOptions removeTrim =
 		StringSplitOptions.RemoveEmptyEntries |
 		StringSplitOptions.TrimEntries;
 
-	public CombinedSolution Solve(string input) {
-		var entries = input.Split('\n')
-			.Select(e => {
-				var split = e.Split('|');
-				return (input: split[0], output: split[1]);
-			});
+	public Part SolvePart1(string input) {
+		var entries = GetEntries(input);
 		var outputs = entries
-			.SelectMany(e => e.output
-				.Split(' ', removeTrim));
+			.SelectMany(e => e.output);
 		int result = outputs.Count(d => d.Length is 2 or 3 or 4 or 7);
-		return new(result);
+		return result;
 	}
+	public Part SolvePart2(string input) {
+		throw new NotImplementedException();
+	}
+
+	private static IEnumerable<(string[] input, string[] output)> GetEntries(string s) {
+		return s.Split('\n')
+			.Select(e => {
+				var split = e.Split('|', removeTrim);
+				return (input: SplitOnEmpty(split[0]),
+					output: SplitOnEmpty(split[1]));
+			});
+	}
+
+	private static string[] SplitOnEmpty(string s) =>
+		s.Split(' ', removeTrim);
 	
 }
