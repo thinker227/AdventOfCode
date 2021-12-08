@@ -11,6 +11,7 @@ public sealed class Day08 : ISplitSolver {
 		var entries = GetEntries(input);
 		var outputs = entries
 			.SelectMany(e => e.output);
+			.SelectMany(e => e.Output);
 		int result = outputs.Count(d => d.Length is 2 or 3 or 4 or 7);
 		return result;
 	}
@@ -18,16 +19,17 @@ public sealed class Day08 : ISplitSolver {
 		throw new NotImplementedException();
 	}
 
-	private static IEnumerable<(string[] input, string[] output)> GetEntries(string s) {
+	private static IEnumerable<Entry> GetEntries(string s) {
 		return s.Split('\n')
 			.Select(e => {
 				var split = e.Split('|', removeTrim);
-				return (input: SplitOnEmpty(split[0]),
-					output: SplitOnEmpty(split[1]));
+				return new Entry(SplitOnEmpty(split[0]),
+					SplitOnEmpty(split[1]));
 			});
 	}
-
 	private static string[] SplitOnEmpty(string s) =>
 		s.Split(' ', removeTrim);
 	
+	private readonly record struct Entry(string[] Input, string[] Output);
+
 }
