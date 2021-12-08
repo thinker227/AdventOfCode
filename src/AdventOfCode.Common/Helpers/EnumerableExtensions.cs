@@ -51,4 +51,13 @@ public static class EnumerableExtensions {
 		if (index % count != 0) yield return elements;
 	}
 
+	public static int IndexOf<TElement>(this IEnumerable<TElement> source, TElement element) {
+		int index = 0;
+		foreach (var e in source) {
+			if (e?.Equals(element) ?? false) return index;
+			index++;
+		}
+		return -1;
+	}
+
 }
