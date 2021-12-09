@@ -47,9 +47,7 @@ public sealed class Day09 : ISplitSolver {
 	}
 	// Returns a collection of basin sizes
 	private static IEnumerable<int> GetBasins(string[] field, IEnumerable<FieldPoint> lowpoints) {
-		List<int> basins = new();
-		foreach (var p in lowpoints)
-			basins.Add(Floodfill(field, p.Point));
+		var basins = lowpoints.Select(p => Floodfill(field, p.Point));
 		return basins;
 	}
 	// Returns the size of a floodfill area
