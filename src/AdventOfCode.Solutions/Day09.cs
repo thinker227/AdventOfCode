@@ -1,4 +1,4 @@
-//namespace AdventOfCode.Solutions;
+namespace AdventOfCode.Solutions;
 
 [Solver(9, @"input\09.txt")]
 public sealed class Day09 : ISplitSolver {
