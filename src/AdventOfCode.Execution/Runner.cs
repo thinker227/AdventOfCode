@@ -30,15 +30,15 @@ public static class Runner {
 
 		if (splitSolver is null) {
 			executionType = ExecutionType.Combined;
-			(part1, part2) = GetSingleExecutionResult(solver, input);
+			(part1, part2) = GetSingleExecutionResult(solver, input, debug);
 		} else {
 			executionType = ExecutionType.Split;
-			(part1, part2) = GetSplitExecutionResult(splitSolver, input);
+			(part1, part2) = GetSplitExecutionResult(splitSolver, input, debug);
 		}
 
 		return new(solver, input, executionType, part1, part2, debug);
 	}
-	private static (PartExecutionResult part1, PartExecutionResult part2) GetSingleExecutionResult(ISolver solver, string input) {
+	private static (PartExecutionResult part1, PartExecutionResult part2) GetSingleExecutionResult(ISolver solver, string input, bool debug) {
 		CombinedSolution solution = default;
 		Exception? exception = null;
 		TimeSpan elapsed;
@@ -47,7 +47,7 @@ public static class Runner {
 		sw.Start();
 		try {
 			solution = solver.Solve(input);
-		} catch (Exception e) {
+		} catch (Exception e) when (!debug) {
 			exception = e;
 		}
 		sw.Stop();
@@ -60,7 +60,7 @@ public static class Runner {
 		PartExecutionResult p2 = new(solution.Part2.ToString(), elapsed, exception);
 		return (p1, p2);
 	}
-	private static (PartExecutionResult part1, PartExecutionResult part2) GetSplitExecutionResult(ISplitSolver splitSolver, string input) {
+	private static (PartExecutionResult part1, PartExecutionResult part2) GetSplitExecutionResult(ISplitSolver splitSolver, string input, bool debug) {
 		Part part1Solution = default;
 		Part part2Solution = default;
 		(Exception? part1, Exception? part2) exception = (null, null);
@@ -71,7 +71,7 @@ public static class Runner {
 		try {
 			part1Solution = splitSolver.SolvePart1(input);
 		}
-		catch (Exception e) {
+		catch (Exception e) when (!debug) {
 			exception.part1 = e;
 		}
 		sw.Stop();
@@ -82,7 +82,7 @@ public static class Runner {
 		try {
 			part2Solution = splitSolver.SolvePart2(input);
 		}
-		catch (Exception e) {
+		catch (Exception e) when (!debug) {
 			exception.part2 = e;
 		}
 		sw.Stop();
