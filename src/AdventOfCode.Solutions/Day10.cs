@@ -1,9 +1,9 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(10, @"input\10.txt")]
-public sealed class Day10 : ISolver {
+public sealed class Day10 : ISplitSolver {
 	
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
 		var span = input.AsSpan();
 		Stack<char> expected = new();
 		Span<int> errors = stackalloc int[4];
@@ -26,7 +26,36 @@ public sealed class Day10 : ISolver {
 			errors[1] * 57 +
 			errors[2] * 1197 +
 			errors[3] * 25137;
-		return new(total);
+		return total;
+	}
+	public Part SolvePart2(string input) {
+		var span = input.AsSpan();
+		Stack<char> expected = new();
+		List<ulong> completions = new();
+
+		foreach (var line in span.EnumerateLines()) {
+			expected.Clear();
+
+			foreach (char c in line) {
+				if (IsOpen(c)) {
+					expected.Push(GetPair(c));
+					continue;
+				}
+				if (c != expected.Pop())
+					goto endOfLine;
+			}
+
+			ulong total = 0;
+			while (expected.TryPop(out char c))
+				total = total * 5 + (ulong)GetRank(c) + 1;
+			completions.Add(total);
+
+			endOfLine:;
+		}
+		
+		ulong result = completions.OrderBy(i => i)
+			.ElementAt(completions.Count / 2);
+		return result;
 	}
 
 	private static bool IsOpen(char c) =>
