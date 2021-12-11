@@ -60,4 +60,21 @@ public static class EnumerableExtensions {
 		return -1;
 	}
 
+	public static T? GetAtPositionOrDefault<T>(this IReadOnlyList<IReadOnlyList<T>> source, int outerPos, int innerPos) {
+		if (outerPos < 0 || outerPos >= source.Count) return default;
+		var inner = source[outerPos];
+		if (innerPos < 0 || innerPos >= inner.Count) return default;
+		return inner[innerPos];
+	}
+	public static T? GetAtPositionOrDefault<T>(this IReadOnlyList<IReadOnlyList<T>> source, Point pos) =>
+		GetAtPositionOrDefault(source, pos.X, pos.Y);
+	public static void SetAtPosition<T>(this IList<IList<T>> source, int outerPos, int innerPos, T value) {
+		if (outerPos < 0 || outerPos >= source.Count) return;
+		var inner = source[outerPos];
+		if (innerPos < 0 || innerPos >= inner.Count) return;
+		inner[innerPos] = value;
+	}
+	public static void SetAtPosition<T>(this IList<IList<T>> source, Point pos, T value) =>
+		SetAtPosition(source, pos.X, pos.Y, value);
+
 }
