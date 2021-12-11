@@ -23,49 +23,43 @@ public sealed class Day11 : ISolver {
 	}
 
 	private static int Simulate(char[][] field, int width, int height) {
-		Queue<Point> points = new();
-		HashSet<Point> visited = new();
-		Stack<Point> flashes = new();
-		points.Enqueue(new(0, 0));
+		List<Point> flashes = new();
 
-		while (points.TryDequeue(out var current)) {
-			if (visited.Contains(current)) continue;
+		foreach (var current in Point.GetPointGrid(width, height)) {
 			char c = field.GetAtPositionOrDefault(current);
 			if (c == default) continue;
 
-			visited.Add(current);
-			if (c >= '9') flashes.Push(current);
+			if (c >= '9') flashes.Add(current);
 			field.SetAtPosition(current, (char)(c + 1));
-
-			points.Enqueue(new(current.X + 1, current.Y));
-			points.Enqueue(new(current.X, current.Y + 1));
 		}
 
+		Stack<Point> points = new(flashes);
+		HashSet<Point> flashed = new();
 		int totalFlashes = 0;
-		visited.Clear();
-		while (flashes.TryPop(out var flash)) {
-			if (visited.Contains(flash)) continue;
-			char c = field.GetAtPositionOrDefault(flash);
+		flashed.Clear();
+		while (points.TryPop(out var current)) {
+			if (flashed.Contains(current)) continue;
+			char c = field.GetAtPositionOrDefault(current);
 			if (c == default) continue;
 
 			if (c <= '9') {
-				field.SetAtPosition(flash, (char)(c + 1));
-				if (c == '9') flashes.Push(flash);
+				field.SetAtPosition(current, (char)(c + 1));
+				if (c == '9') points.Push(current);
 				continue;
 			}
 
-			visited.Add(flash);
-			field.SetAtPosition(flash, '0');
+			flashed.Add(current);
+			field.SetAtPosition(current, '0');
 			totalFlashes++;
 
-			flashes.Push(new(flash.X - 1, flash.Y - 1));
-			flashes.Push(new(flash.X, flash.Y - 1));
-			flashes.Push(new(flash.X + 1, flash.Y - 1));
-			flashes.Push(new(flash.X - 1, flash.Y));
-			flashes.Push(new(flash.X + 1, flash.Y));
-			flashes.Push(new(flash.X - 1, flash.Y + 1));
-			flashes.Push(new(flash.X, flash.Y + 1));
-			flashes.Push(new(flash.X + 1, flash.Y + 1));
+			points.Push(new(current.X - 1, current.Y - 1));
+			points.Push(new(current.X, current.Y - 1));
+			points.Push(new(current.X + 1, current.Y - 1));
+			points.Push(new(current.X - 1, current.Y));
+			points.Push(new(current.X + 1, current.Y));
+			points.Push(new(current.X - 1, current.Y + 1));
+			points.Push(new(current.X, current.Y + 1));
+			points.Push(new(current.X + 1, current.Y + 1));
 		}
 
 		return totalFlashes;
