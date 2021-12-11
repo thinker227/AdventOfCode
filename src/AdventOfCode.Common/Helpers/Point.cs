@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdventOfCode.Common;
 
@@ -38,6 +39,18 @@ public readonly struct Point : IEquatable<Point> {
 		HashCode.Combine(X, Y);
 	public override string ToString() =>
 		$"{X},{Y}";
+
+	/// <summary>
+	/// Generates a sequence of points in a grid.
+	/// </summary>
+	/// <param name="width">The width of the grid.</param>
+	/// <param name="height">The height of the grid.</param>
+	/// <returns>An <see cref="IEnumerable{T}"/> of points.</returns>
+	public static IEnumerable<Point> GetPointGrid(int width, int height) {
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
+				yield return new(x, y);
+	}
 
 
 
