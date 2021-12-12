@@ -178,4 +178,35 @@ public readonly ref struct CombinedSolution {
 		(HasPart2 ? $"(2: {Part2.ToString()})" : string.Empty) :
 		"none";
 
+
+
+	/// <summary>
+	/// Implicitly converts a <see cref="ReadOnlySpan{T}"/>
+	/// of <see cref="char"/> to a <see cref="CombinedSolution"/> instance.
+	/// </summary>
+	/// <param name="charSpan">The char span representation of the first part.</param>
+	public static implicit operator CombinedSolution(ReadOnlySpan<char> charSpan) =>
+		new(charSpan);
+	/// <summary>
+	/// Implicitly converts a <see cref="string"/> to a
+	/// <see cref="CombinedSolution"/> instance.
+	/// </summary>
+	/// <param name="string">The char span representation of the first part.</param>
+	public static implicit operator CombinedSolution(string @string) =>
+		new(@string.AsSpan());
+	/// <summary>
+	/// Implicitly converts an <see cref="int"/> to a
+	/// <see cref="CombinedSolution"/> instance.
+	/// </summary>
+	/// <param name="integer">The integer representation of the first part.</param>
+	public static implicit operator CombinedSolution(int integer) =>
+		new(integer);
+	/// <summary>
+	/// Implicitly converts an <see cref="ulong"/> to a
+	/// <see cref="CombinedSolution"/> instance.
+	/// </summary>
+	/// <param name="ulong">The integer representation of the first part.</param>
+	public static implicit operator CombinedSolution(ulong @ulong) =>
+		new(@ulong);
+
 }
