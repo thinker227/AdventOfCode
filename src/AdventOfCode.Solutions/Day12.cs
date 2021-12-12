@@ -5,12 +5,12 @@ public sealed class Day12 : ISplitSolver {
 
 	public Part SolvePart1(string input) {
 		CaveSystem system = ParseCaveSystem(input);
-		var paths = GetAllPaths(system.Start, Path.Empty, false);
+		var paths = GetAllPaths(system.Start, Path.Empty, true);
 		return paths.Length;
 	}
 	public Part SolvePart2(string input) {
 		CaveSystem system = ParseCaveSystem(input);
-		var paths = GetAllPaths(system.Start, Path.Empty, true);
+		var paths = GetAllPaths(system.Start, Path.Empty, false);
 		var distinct = paths.Distinct(new PathEqualityComparer());
 		return distinct.Count();
 	}
@@ -23,7 +23,7 @@ public sealed class Day12 : ISplitSolver {
 		return system;
 	}
 
-	private static Path[] GetAllPaths(Cave current, Path currentPath, bool part2, bool spent = false) {
+	private static Path[] GetAllPaths(Cave current, Path currentPath, bool spent) {
 		if (current.IsEnd) {
 			var path = currentPath with {
 				Visited = currentPath.Visited.Add(current)
@@ -39,10 +39,10 @@ public sealed class Day12 : ISplitSolver {
 			if (currentPath.VisitedSmall.Contains(current))
 				return Array.Empty<Path>();
 
-			if (!current.IsSpecial && part2 && !spent) {
+			if (!current.IsSpecial && !spent) {
 				Path otherPath = currentPath with { Visited = visited };
 				foreach (var c in current.Connections)
-					paths.AddRange(GetAllPaths(c, otherPath, true, true));
+					paths.AddRange(GetAllPaths(c, otherPath, true));
 			}
 
 			visitedSmall = currentPath.VisitedSmall.Add(current);
@@ -51,7 +51,7 @@ public sealed class Day12 : ISplitSolver {
 
 		Path newPath = new(visited, visitedSmall);
 		foreach (var c in current.Connections)
-			paths.AddRange(GetAllPaths(c, newPath, part2, spent));
+			paths.AddRange(GetAllPaths(c, newPath, spent));
 		return paths.ToArray();
 	}
 
