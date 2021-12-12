@@ -11,7 +11,8 @@ public sealed class Day12 : ISplitSolver {
 	public Part SolvePart2(string input) {
 		CaveSystem system = ParseCaveSystem(input);
 		var paths = GetAllPaths(system.Start, Path.Empty, true);
-		return paths.Length;
+		var distinct = paths.Distinct(new PathEqualityComparer());
+		return distinct.Count();
 	}
 
 	private static CaveSystem ParseCaveSystem(string input) {
@@ -113,6 +114,18 @@ public sealed class Day12 : ISplitSolver {
 				.Select(c => c.Name);
 			string visitedString = string.Join(" > ", visited);
 			return visitedString;
+		}
+	}
+
+	private sealed class PathEqualityComparer : IEqualityComparer<Path> {
+		public bool Equals(Path? a, Path? b) =>
+			a is not null && b is not null &&
+			a.Visited.SequenceEqual(b.Visited);
+		public int GetHashCode(Path path) {
+			HashCode hashCode = new();
+			foreach (var c in path.Visited)
+				hashCode.Add(c);
+			return hashCode.ToHashCode();
 		}
 	}
 
