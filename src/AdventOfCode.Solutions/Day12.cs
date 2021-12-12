@@ -1,12 +1,17 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(12, @"input\12.txt")]
-public sealed class Day12 : ISolver {
-	
-	public CombinedSolution Solve(string input) {
+public sealed class Day12 : ISplitSolver {
+
+	public Part SolvePart1(string input) {
 		CaveSystem system = ParseCaveSystem(input);
-		var paths = GetAllPaths(system.Start, Path.Empty);
-		return new(paths.Length);
+		var paths = GetAllPaths(system.Start, Path.Empty, false);
+		return paths.Length;
+	}
+	public Part SolvePart2(string input) {
+		CaveSystem system = ParseCaveSystem(input);
+		var paths = GetAllPaths(system.Start, Path.Empty, true);
+		return paths.Length;
 	}
 
 	private static CaveSystem ParseCaveSystem(string input) {
@@ -17,7 +22,7 @@ public sealed class Day12 : ISolver {
 		return system;
 	}
 
-	private static Path[] GetAllPaths(Cave current, Path currentPath) {
+	private static Path[] GetAllPaths(Cave current, Path currentPath, bool part2, bool spent = false) {
 		if (current.IsEnd) {
 			var path = currentPath with {
 				Visited = currentPath.Visited.Add(current)
@@ -25,20 +30,27 @@ public sealed class Day12 : ISolver {
 			return new[] { path };
 		}
 
-		ImmutableHashSet<Cave>? visitedSmall = null;
+		List<Path> paths = new();
+		var visited = currentPath.Visited.Add(current);
+
+		ImmutableHashSet<Cave> visitedSmall;
 		if (current.IsSmall) {
 			if (currentPath.VisitedSmall.Contains(current))
 				return Array.Empty<Path>();
+
+			if (!current.IsSpecial && part2 && !spent) {
+				Path otherPath = currentPath with { Visited = visited };
+				foreach (var c in current.Connections)
+					paths.AddRange(GetAllPaths(c, otherPath, true, true));
+			}
+
 			visitedSmall = currentPath.VisitedSmall.Add(current);
 		}
-		visitedSmall ??= currentPath.VisitedSmall;
-
-		var visited = currentPath.Visited.Add(current);
+		else visitedSmall = currentPath.VisitedSmall;
 
 		Path newPath = new(visited, visitedSmall);
-		List<Path> paths = new();
 		foreach (var c in current.Connections)
-			paths.AddRange(GetAllPaths(c, newPath));
+			paths.AddRange(GetAllPaths(c, newPath, part2, spent));
 		return paths.ToArray();
 	}
 
