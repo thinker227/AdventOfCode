@@ -4,18 +4,17 @@ namespace AdventOfCode.Solutions;
 public sealed class Day12 : ISolver {
 	
 	public CombinedSolution Solve(string input) {
+		CaveSystem system = ParseCaveSystem(input);
+		var paths = GetAllPaths(system.Start, Path.Empty);
+		return new(paths.Length);
+	}
+
+	private static CaveSystem ParseCaveSystem(string input) {
 		CaveSystem system = new();
 		var lines = input.Split('\n', StringSplitOptions.TrimEntries);
 		foreach (string line in lines)
 			system.ParseAddCave(line);
-
-		Path startPath = new(
-			ImmutableArray.Create<Cave>(),
-			ImmutableHashSet.Create<Cave>()
-		);
-		var paths = GetAllPaths(system.Start, startPath);
-
-		return new(paths.Length);
+		return system;
 	}
 
 	private static Path[] GetAllPaths(Cave current, Path currentPath) {
@@ -48,6 +47,7 @@ public sealed class Day12 : ISolver {
 	private record Cave(string Name) {
 		public HashSet<Cave> Connections { get; } = new();
 		public bool IsSmall => Name.All(c => char.IsLower(c));
+		public bool IsSpecial => IsStart || IsEnd;
 		public bool IsStart => Name == "start";
 		public bool IsEnd => Name == "end";
 
@@ -86,12 +86,14 @@ public sealed class Day12 : ISolver {
 			fromCave.Connections.Add(toCave);
 			toCave.Connections.Add(fromCave);
 		}
-		public Cave GetCave(string name) =>
-			caves[name];
 
 	}
 
 	private record Path(ImmutableArray<Cave> Visited, ImmutableHashSet<Cave> VisitedSmall) {
+		public static Path Empty { get; } = new (
+			ImmutableArray.Create<Cave>(),
+			ImmutableHashSet.Create<Cave>()
+		);
 		public int Length => Visited.Length;
 		
 		public override string? ToString() {
