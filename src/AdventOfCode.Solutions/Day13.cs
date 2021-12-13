@@ -1,13 +1,29 @@
+using System.Text;
+
 namespace AdventOfCode.Solutions;
 
 [Solver(13, @"input\13.txt")]
-public sealed class Day13 : ISolver {
+public sealed class Day13 : ISplitSolver {
 	
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
 		(var points, var folds) = ParseInput(input);
-		var folded = points = FoldPoints(points, folds[0]);
-		return folded.Length;
-		throw new NotImplementedException();
+		var folded = FoldPoints(points, folds[0]);
+		return folded.Count;
+	}
+	public Part SolvePart2(string input) {
+		(var points, var folds) = ParseInput(input);
+
+		HashSet<Point>? folded = null;
+		foreach (var f in folds) {
+			if (folded is null) {
+				folded = FoldPoints(points, f);
+				continue;
+			}
+			folded = FoldPoints(folded, f);
+		}
+
+		string str = PointsToString(folded!);
+		return str;
 	}
 
 	private static (Point[], Fold[]) ParseInput(string s) {
@@ -38,7 +54,7 @@ public sealed class Day13 : ISolver {
 		return (points.ToArray(), folds.ToArray());
 	}
 
-	private static Point[] FoldPoints(Point[] points, Fold f) {
+	private static HashSet<Point> FoldPoints(IEnumerable<Point> points, Fold f) {
 		HashSet<Point> folded = new();
 
 		foreach (var p in points) {
@@ -53,7 +69,23 @@ public sealed class Day13 : ISolver {
 			folded.Add(foldedPoint);
 		}
 
-		return folded.ToArray();
+		return folded;
+	}
+
+	private static string PointsToString(HashSet<Point> points) {
+		int width = points.Max(p => p.X);
+		int height = points.Max(p => p.Y);
+
+		var builder = new StringBuilder().AppendLine();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (points.Contains(new(x, y))) builder.Append('#');
+				else builder.Append(' ');
+			}
+			builder.AppendLine();
+		}
+
+		return builder.ToString();
 	}
 
 
