@@ -77,8 +77,8 @@ public sealed class Day13 : ISplitSolver {
 		int height = points.Max(p => p.Y);
 
 		var builder = new StringBuilder().AppendLine();
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y <= height; y++) {
+			for (int x = 0; x <= width; x++) {
 				if (points.Contains(new(x, y))) builder.Append('#');
 				else builder.Append(' ');
 			}
