@@ -1,23 +1,48 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(15, @"input\15.txt")]
-public sealed class Day15 : ISolver {
+public sealed class Day15 : ISplitSolver {
 	
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
 		var grid = input.Split('\n', StringSplitOptions.TrimEntries)
 			.Select(i => i.ToCharArray())
 			.ToArray();
 		int width = input.IndexOf('\r');
 		int height = grid.Length;
-		var path = GetLowestPath(grid, width, height);
+
+		Func<Point, char> selector = p => grid.GetAtPositionOrDefault(p);
+		var path = GetLowestPath(selector, width, height);
 		int result = path
 			.Select(i => i - '0')
 			.Aggregate((a, b) => a + b);
 		return result;
-		throw new NotImplementedException();
+	}
+	public Part SolvePart2(string input) {
+		var grid = input.Split('\n', StringSplitOptions.TrimEntries)
+			.Select(i => i.ToCharArray())
+			.ToArray();
+		int width = input.IndexOf('\r');
+		int height = grid.Length;
+
+		Func<Point, char> selector = p => {
+			Point pReal = new(p.X % width, p.Y % height);
+			Point square = new(p.X / 10, p.Y / 10);
+			int offset = square.X + square.Y;
+			char cReal = grid.GetAtPositionOrDefault(pReal);
+			if (cReal == default) return default;
+			char c = (char)(cReal + offset);
+			if (c > '9') c = (char)(c - 9);
+			return c;
+		};
+
+		var path = GetLowestPath(selector, width * 5, height * 5);
+		int result = path
+			.Select(i => i - '0')
+			.Aggregate((a, b) => a + b);
+		return result;
 	}
 
-	private static IEnumerable<char> GetLowestPath(char[][] grid, int width, int height) {
+	private static IEnumerable<char> GetLowestPath(Func<Point, char> gridSelector, int width, int height) {
 		HashSet<Point> visited = new();
 		PriorityQueue<Point, char[]> queue = new(new PathComparer());
 		queue.Enqueue(new(0, 0), new char[] { });
@@ -33,11 +58,11 @@ public sealed class Day15 : ISolver {
 			Point d = new(current.X, current.Y + 1);
 			Point l = new(current.X - 1, current.Y);
 			Point r = new(current.X + 1, current.Y);
-
-			char up = grid.GetAtPositionOrDefault(u);
-			char down = grid.GetAtPositionOrDefault(d);
-			char left = grid.GetAtPositionOrDefault(l);
-			char right = grid.GetAtPositionOrDefault(r);
+			
+			char up = gridSelector(u);
+			char down = gridSelector(d);
+			char left = gridSelector(l);
+			char right = gridSelector(r);
 
 			int pathLength = path.Length + 1;
 
