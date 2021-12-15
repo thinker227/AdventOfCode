@@ -10,7 +10,7 @@ public sealed class Day15 : ISplitSolver {
 		int width = input.IndexOf('\r');
 		int height = grid.Length;
 
-		Func<Point, char> selector = p => grid.GetAtPositionOrDefault(p);
+		char selector(Point p) => grid.GetAtPositionOrDefault(p);
 		var path = GetLowestPath(selector, width, height);
 		int result = path
 			.Select(i => i - '0')
@@ -24,16 +24,16 @@ public sealed class Day15 : ISplitSolver {
 		int width = input.IndexOf('\r');
 		int height = grid.Length;
 
-		Func<Point, char> selector = p => {
+		char selector(Point p) {
 			Point pReal = new(p.X % width, p.Y % height);
-			Point square = new(p.X / 10, p.Y / 10);
+			Point square = new(p.X / width, p.Y / height);
 			int offset = square.X + square.Y;
 			char cReal = grid.GetAtPositionOrDefault(pReal);
 			if (cReal == default) return default;
 			char c = (char)(cReal + offset);
 			if (c > '9') c = (char)(c - 9);
 			return c;
-		};
+		}
 
 		var path = GetLowestPath(selector, width * 5, height * 5);
 		int result = path
@@ -44,13 +44,16 @@ public sealed class Day15 : ISplitSolver {
 
 	private static IEnumerable<char> GetLowestPath(Func<Point, char> gridSelector, int width, int height) {
 		HashSet<Point> visited = new();
-		PriorityQueue<Point, char[]> queue = new(new PathComparer());
-		queue.Enqueue(new(0, 0), new char[] { });
+		List<char[]> endingPaths = new();
+		PriorityQueue<Point, char[]> queue = new(PathComparer.Instance);
+		queue.Enqueue(new(0, 0), Array.Empty<char>());
 
 		while (queue.TryDequeue(out var current, out var path)) {
+			if (current.X < 0 || current.X >= width || current.Y < 0 || current.Y >= height) continue;
+
 			if (current.X == width - 1 && current.Y == height - 1)
-				return path;
-			
+				endingPaths.Add(path);
+
 			if (visited.Contains(current)) continue;
 			visited.Add(current);
 
@@ -92,12 +95,13 @@ public sealed class Day15 : ISplitSolver {
 			}
 		}
 
-		return Enumerable.Empty<char>();
+		return endingPaths.Min(PathComparer.Instance)!;
 	}
 
 
 
 	private sealed class PathComparer : IComparer<char[]> {
+		public static PathComparer Instance { get; } = new();
 		public int Compare(char[]? x, char[]? y) {
 			int? xx = x?.Sum(c => c - '0');
 			int? yy = y?.Sum(c => c - '0');
