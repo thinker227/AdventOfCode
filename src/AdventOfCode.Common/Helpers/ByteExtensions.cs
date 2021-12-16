@@ -13,10 +13,11 @@ public static class ByteExtensions {
 		return (byte)single;
 	}
 
-	public static byte GetByte(this byte[] bytes, int index, int length) {
-		if (length >= 8) throw new ArgumentOutOfRangeException(nameof(index));
+	public static ulong GetInteger(this byte[] bytes, int index, int length) {
+		if (length > sizeof(ulong) * 8)
+			throw new ArgumentOutOfRangeException(nameof(index));
 		
-		byte result = 0;
+		ulong result = 0;
 		for (int i = 0; i < length; i++) {
 			result <<= 1;
 			result |= GetBit(bytes, index + i);
