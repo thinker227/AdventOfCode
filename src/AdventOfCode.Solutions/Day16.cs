@@ -1,15 +1,23 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(16, @"input\16.txt")]
-public sealed class Day16 : ISolver {
+public sealed class Day16 : ISplitSolver {
 	
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
 		var bytes = HexToBinary(input);
 		PacketReader reader = new(bytes);
 		var packet = reader.ParsePacket();
 
-		int sum = SumVersions(packet);
-		return sum;
+		int result = SumVersions(packet);
+		return result;
+	}
+	public Part SolvePart2(string input) {
+		var bytes = HexToBinary(input);
+		PacketReader reader = new(bytes);
+		var packet = reader.ParsePacket();
+
+		ulong result = Evaluate(packet);
+		return result;
 	}
 
 	private static byte[] HexToBinary(string hex) {
@@ -35,6 +43,63 @@ public sealed class Day16 : ISolver {
 		if (root.Subpackets is null) return result;
 		foreach (var packet in root.Subpackets)
 			result += SumVersions(packet);
+		return result;
+	}
+	private static ulong Evaluate(Packet root) {
+		if (root.Subpackets is null)
+			return root.Literal!.Value;
+
+		ulong result = 0;
+		ulong a;
+		ulong b;
+
+		switch (root.TypeId) {
+			case 0:
+				foreach (var packet in root.Subpackets)
+					result += Evaluate(packet);
+				break;
+
+			case 1:
+				result = 1;
+				foreach (var packet in root.Subpackets)
+					result *= Evaluate(packet);
+				break;
+
+			case 2:
+				result = ulong.MaxValue;
+				foreach (var packet in root.Subpackets) {
+					ulong value = Evaluate(packet);
+					if (value < result) result = value;
+				}
+				break;
+
+			case 3:
+				result = 0;
+				foreach (var packet in root.Subpackets) {
+					ulong value = Evaluate(packet);
+					if (value > result) result = value;
+				}
+				break;
+
+			case 5:
+				a = Evaluate(root.Subpackets[0]);
+				b = Evaluate(root.Subpackets[1]);
+				result = a > b ? 1 : 0ul;
+				break;
+
+			case 6:
+				a = Evaluate(root.Subpackets[0]);
+				b = Evaluate(root.Subpackets[1]);
+				result = a < b ? 1 : 0ul;
+				break;
+
+			case 7:
+				a = Evaluate(root.Subpackets[0]);
+				b = Evaluate(root.Subpackets[1]);
+				result = a == b ? 1 : 0ul;
+				break;
+		}
+
 		return result;
 	}
 
@@ -80,7 +145,7 @@ public sealed class Day16 : ISolver {
 
 			return result;
 		}
-		private IReadOnlyCollection<Packet> ReadPacketsFromSize(int size) {
+		private IReadOnlyList<Packet> ReadPacketsFromSize(int size) {
 			List<Packet> packets = new();
 			int end = position + size;
 
@@ -91,7 +156,7 @@ public sealed class Day16 : ISolver {
 
 			return packets;
 		}
-		private IReadOnlyCollection<Packet> ReadPacketsFromCount(int count) {
+		private IReadOnlyList<Packet> ReadPacketsFromCount(int count) {
 			var packets = new Packet[count];
 
 			for (int i = 0; i < count; i++) {
@@ -124,6 +189,6 @@ public sealed class Day16 : ISolver {
 
 	}
 
-	private readonly record struct Packet(int Version, int TypeId, ulong? Literal, IReadOnlyCollection<Packet>? Subpackets);
+	private readonly record struct Packet(int Version, int TypeId, ulong? Literal, IReadOnlyList<Packet>? Subpackets);
 
 }
