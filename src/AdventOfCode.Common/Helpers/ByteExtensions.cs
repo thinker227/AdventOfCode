@@ -4,16 +4,22 @@ namespace AdventOfCode.Common;
 
 public static class ByteExtensions {
 
-	public static byte GetBit(this byte[] bytes, int index) =>
-		(byte)(bytes[index / 8] >> index % 8 & 1);
+	public static byte GetBit(this byte[] bytes, int index) {
+		byte b = bytes[index / 8];
+		int byteIndex = index % 8;
+		int shift = 7 - byteIndex;
+		int shifted = b >> shift;
+		int single = shifted & 1;
+		return (byte)single;
+	}
 
 	public static byte GetByte(this byte[] bytes, int index, int length) {
 		if (length >= 8) throw new ArgumentOutOfRangeException(nameof(index));
 		
 		byte result = 0;
-		for (int i = index; i < index + length; i++) {
-			result |= GetBit(bytes, index + i);
+		for (int i = 0; i < length; i++) {
 			result <<= 1;
+			result |= GetBit(bytes, index + i);
 		}
 		return result;
 	}
