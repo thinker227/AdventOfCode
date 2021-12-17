@@ -35,8 +35,8 @@ public readonly struct Rectangle : IEquatable<Rectangle> {
     /// <param name="xMax">The maximum x position of the rectangle.</param>
     /// <param name="yMax">The maximum y position of the rectangle.</param>
     public Rectangle(int xMin, int yMin, int xMax, int yMax) {
-        Min = new(xMin, yMin);
-        Max = new(xMax, yMax);
+        Min = new(Math.Min(xMin, xMax), Math.Min(yMin, yMax));
+        Max = new(Math.Max(xMin, xMax), Math.Max(yMin, yMax));
     }
 
 
