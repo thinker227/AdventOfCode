@@ -37,7 +37,7 @@ public unsafe struct IntReader {
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void JumpToNextDigit() {
-        while (current < upper && current[0] is < '0' or > '9' )
+        while (current < upper && current[0] is (< '0' or > '9') and not '-')
             current++;
     }
 
@@ -46,6 +46,9 @@ public unsafe struct IntReader {
     /// Reads the next int from the span.
     /// </summary>
     public int Next() {
+        bool negative = current[0] == '-';
+        if (negative) current++;
+
         int result = current[0] - '0';
         current++;
 
@@ -56,6 +59,7 @@ public unsafe struct IntReader {
 
         JumpToNextDigit();
 
+        if (negative) result *= -1;
         return result;
     }
 
