@@ -17,7 +17,7 @@ public readonly struct Union<T1, T2> {
 
 
 	/// <summary>
-	/// Whether <see cref="Value1"/> is set.
+	/// Whether the union has a value of type <typeparamref name="T1"/>.
 	/// </summary>
 	public bool HasValue1 { get; } = false;
 	/// <summary>
@@ -30,7 +30,7 @@ public readonly struct Union<T1, T2> {
 		HasValue1 ? value1! :
 		throw new InvalidOperationException();
 	/// <summary>
-	/// Whether <see cref="Value2"/> is set.
+	/// Whether the union has a value of type <typeparamref name="T2"/>.
 	/// </summary>
 	public bool HasValue2 { get; } = false;
 	/// <summary>
@@ -67,10 +67,10 @@ public readonly struct Union<T1, T2> {
 	/// <summary>
 	/// Performs a switch over the union.
 	/// </summary>
-	/// <param name="action1">The <see cref="Action{T1}"/>
-	/// to execute if <see cref="Value1"/> is set.</param>
-	/// <param name="action2">The <see cref="Action{T1}"/>
-	/// to execute if <see cref="Value2"/> is set.</param>
+	/// <param name="action1">The <see cref="Action{T1}"/> to execute
+	/// if the union has a value of type <typeparamref name="T1"/>.</param>
+	/// <param name="action2">The <see cref="Action{T2}"/> to execute
+	/// if the union has a value of type <typeparamref name="T2"/>.</param>
 	/// <exception cref="InvalidOperationException">
 	/// No value is set.
 	/// </exception>
@@ -79,14 +79,15 @@ public readonly struct Union<T1, T2> {
 		if (HasValue2) action2(Value2);
 		throw new InvalidOperationException();
 	}
+
 	/// <summary>
 	/// Performs a switch over the union returning a value.
 	/// </summary>
-	/// <param name="func1">The <see cref="Func{T1, TResult}"/>
-	/// to execute if <see cref="Value1"/> is set.</param>
-	/// <param name="func2">The <see cref="Func{T1, TResult}"/>
-	/// to execute if <see cref="Value2"/> is set.</param>
-	/// <returns></returns>
+	/// <param name="func1">The <see cref="Func{T1, TResult}"/> to execute
+	/// if the union has a value of type <typeparamref name="T1"/>.</param>
+	/// <param name="func2">The <see cref="Func{T1, TResult}"/> to execute
+	/// if the union has a value of type <typeparamref name="T2"/>.</param>
+	/// <returns>The result of the switch.</returns>
 	/// <exception cref="InvalidOperationException">
 	/// No value is set.
 	/// </exception>
@@ -95,6 +96,45 @@ public readonly struct Union<T1, T2> {
 		if (HasValue2) return func2(Value2);
 		throw new InvalidOperationException();
 	}
+	/// <summary>
+	/// Performs a switch over the union returning a value.
+	/// </summary>
+	/// <param name="value1">The value to return
+	/// if the union has a value of type <typeparamref name="T1"/>.</param>
+	/// <param name="func2">The <see cref="Func{T1, TResult}"/> to execute
+	/// if the union has a value of type <typeparamref name="T2"/>.</param>
+	/// <returns>The result of the switch.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// No value is set.
+	/// </exception>
+	public TResult Switch<TResult>(TResult value1, Func<T2, TResult> func2) =>
+		Switch(Functional.Result<T1, TResult>(value1), func2);
+	/// <summary>
+	/// Performs a switch over the union returning a value.
+	/// </summary>
+	/// <param name="func1">The <see cref="Func{T1, TResult}"/> to execute
+	/// if the union has a value of type <typeparamref name="T1"/>.</param>
+	/// <param name="value2">The value to return
+	/// if the union has a value of type <typeparamref name="T2"/>.</param>
+	/// <returns>The result of the switch.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// No value is set.
+	/// </exception>
+	public TResult Switch<TResult>(Func<T1, TResult> func1, TResult value2) =>
+		Switch(func1, Functional.Result<T2, TResult>(value2));
+	/// <summary>
+	/// Performs a switch over the union returning a value.
+	/// </summary>
+	/// <param name="value1">The value to return
+	/// if the union has a value of type <typeparamref name="T1"/>.</param>
+	/// <param name="value2">The value to return
+	/// if the union has a value of type <typeparamref name="T2"/>.</param>
+	/// <returns>The result of the switch.</returns>
+	/// <exception cref="InvalidOperationException">
+	/// No value is set.
+	/// </exception>
+	public TResult Switch<TResult>(TResult value1, TResult value2) =>
+		Switch(Functional.Result<T1, TResult>(value1), Functional.Result<T2, TResult>(value2));
 
 	public override string? ToString() {
 		if (HasValue1) return Value1?.ToString();
