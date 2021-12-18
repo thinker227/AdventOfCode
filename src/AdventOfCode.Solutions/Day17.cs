@@ -12,11 +12,11 @@ public sealed class Day17 : ISolver {
 	private static unsafe Rectangle ParseRectangle(string input) {
 		int xMin, yMin, xMax, yMax;
 		fixed (char* c = input) {
-			IntReader reader = new(c, input.Length);
-			xMin = reader.Next();
-			xMax = reader.Next();
-			yMin = reader.Next();
-			yMax = reader.Next();
+			CharReader reader = new(c, input.Length);
+			xMin = reader.NextInt();
+			xMax = reader.NextInt();
+			yMin = reader.NextInt();
+			yMax = reader.NextInt();
 		}
 		return new(xMin, yMin, xMax, yMax);
 	}

@@ -27,9 +27,9 @@ public sealed class Day06 : ISplitSolver {
         // Parse input into fish count
         unsafe {
             fixed (char* c = nums) {
-                IntReader reader = new(c, nums.Length);
+                CharReader reader = new(c, nums.Length);
                 while (!reader.AtEnd) {
-                    int n = reader.Next();
+                    int n = reader.NextInt();
                     fishes[n]++;
                 }
             }
