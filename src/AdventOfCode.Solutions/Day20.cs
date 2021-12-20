@@ -5,9 +5,11 @@ public sealed class Day20 : ISolver {
 	
 	public CombinedSolution Solve(string input) {
 		var (algorithm, image) = ParseInput(input);
+		Console.WriteLine(ImageToString(image));
 
 		for (int i = 0; i < 2; i++) {
 			image = Enhance(image, algorithm);
+			Console.WriteLine(ImageToString(image));
 		}
 		
 		return image.Points.Count;
@@ -56,18 +58,18 @@ public sealed class Day20 : ISolver {
 
 		// Add borders if infinite pixel is active
 		if (image.InfinitePixel) {
-			for (int x = newBounds.Min.X; x < newBounds.Max.X; x++) {
+			for (int x = newBounds.Min.X; x <= newBounds.Max.X; x++) {
 				enhanced.Add(new(x, newBounds.Min.Y));
 				enhanced.Add(new(x, newBounds.Max.Y));
 			}
-			for (int y = newBounds.Min.Y; y < newBounds.Max.Y; y++) {
+			for (int y = newBounds.Min.Y; y <= newBounds.Max.Y; y++) {
 				enhanced.Add(new(newBounds.Min.X, y));
 				enhanced.Add(new(newBounds.Max.X, y));
 			}
 		}
 
-		for (int x = newBounds.Min.X; x < newBounds.Max.X; x++) {
-			for (int y = newBounds.Min.Y; y < newBounds.Max.Y; y++) {
+		for (int x = newBounds.Min.X; x <= newBounds.Max.X; x++) {
+			for (int y = newBounds.Min.Y; y <= newBounds.Max.Y; y++) {
 				Point current = new(x, y);
 				bool lit = GetEnhancedPoint(image, current, algorithm);
 				if (lit) enhanced.Add(current);
@@ -97,9 +99,6 @@ public sealed class Day20 : ISolver {
 			checkPixel(new(point.X,     point.Y + 1)),
 			checkPixel(new(point.X + 1, point.Y + 1)),
 		};
-		//bool[] bits = new bool[9];
-		//void addBit(int index, Point point) =>
-		//	bits[index] = CheckPixel(image, point);
 
 		int position = 0;
 		for (int i = 0; i < 9; i++) {
@@ -108,6 +107,18 @@ public sealed class Day20 : ISolver {
 		}
 
 		return algorithm[position];
+	}
+
+	private static string ImageToString(Image image) {
+		System.Text.StringBuilder builder = new();
+		for (int y = image.Bounds.Min.Y; y <= image.Bounds.Max.Y; y++) {
+			for (int x = image.Bounds.Min.X; x <= image.Bounds.Max.X; x++) {
+				if (image.Points.Contains(new(x, y))) builder.Append('#');
+				else builder.Append('.');
+			}
+			builder.Append('\n');
+		}
+		return builder.ToString();
 	}
 
 
