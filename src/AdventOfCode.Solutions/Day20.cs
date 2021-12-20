@@ -5,14 +5,15 @@ public sealed class Day20 : ISolver {
 	
 	public CombinedSolution Solve(string input) {
 		var (algorithm, image) = ParseInput(input);
-		
-		for (int i = 0; i < 2; i++)
+
+		for (int i = 0; i < 2; i++) {
 			image = Enhance(image, algorithm);
+		}
 		
 		return image.Points.Count;
 	}
 
-	private static (bool[] algorithm, Image image) ParseInput(string input) {
+	private static (bool[], Image) ParseInput(string input) {
 		var span = input.AsSpan();
 		int newline = span.IndexOf('\r');
 		var algorithm = span[..newline];
@@ -41,7 +42,7 @@ public sealed class Day20 : ISolver {
 		int height = y;
 		Rectangle bounds = new(0, 0, width, height);
 
-		return new(hashPoints, bounds);
+		return new(hashPoints, bounds, false);
 	}
 	
 	private static Image Enhance(Image image, bool[] algorithm) {
@@ -53,28 +54,52 @@ public sealed class Day20 : ISolver {
 			bounds.Max.X + 1,
 			bounds.Max.Y + 1);
 
-		for (int x = bounds.Min.X; x < bounds.Max.X; x++) {
-			for (int y = bounds.Min.Y; y < bounds.Max.Y; y++) {
+		// Add borders if infinite pixel is active
+		if (image.InfinitePixel) {
+			for (int x = newBounds.Min.X; x < newBounds.Max.X; x++) {
+				enhanced.Add(new(x, newBounds.Min.Y));
+				enhanced.Add(new(x, newBounds.Max.Y));
+			}
+			for (int y = newBounds.Min.Y; y < newBounds.Max.Y; y++) {
+				enhanced.Add(new(newBounds.Min.X, y));
+				enhanced.Add(new(newBounds.Max.X, y));
+			}
+		}
+
+		for (int x = newBounds.Min.X; x < newBounds.Max.X; x++) {
+			for (int y = newBounds.Min.Y; y < newBounds.Max.Y; y++) {
 				Point current = new(x, y);
-				bool lit = GetEnhancedPoint(image.Points, current, algorithm);
+				bool lit = GetEnhancedPoint(image, current, algorithm);
 				if (lit) enhanced.Add(current);
 			}
 		}
+
+		bool infinitePixel = image.InfinitePixel;
+		if (algorithm[0] && !image.InfinitePixel) infinitePixel = true;
+		if (!algorithm[^1] && image.InfinitePixel) infinitePixel = false;
 		
-		return new(enhanced, newBounds);
+		return new(enhanced, newBounds, infinitePixel);
 	}
-	private static bool GetEnhancedPoint(HashSet<Point> points, Point point, bool[] algorithm) {
-		var bits = new bool[] {
-			points.Contains(new(point.X - 1, point.Y - 1)),
-			points.Contains(new(point.X,     point.Y - 1)),
-			points.Contains(new(point.X + 1, point.Y - 1)),
-			points.Contains(new(point.X - 1, point.Y    )),
-			points.Contains(point),
-			points.Contains(new(point.X + 1, point.Y    )),
-			points.Contains(new(point.X - 1, point.Y + 1)),
-			points.Contains(new(point.X,     point.Y + 1)),
-			points.Contains(new(point.X + 1, point.Y + 1)),
+	private static bool GetEnhancedPoint(Image image, Point point, bool[] algorithm) {
+		bool checkPixel(Point point) =>
+			image.Bounds.PointInRectangle(point) ?
+				image.Points.Contains(point) :
+				image.InfinitePixel;
+
+		var bits = new bool[9] {
+			checkPixel(new(point.X - 1, point.Y - 1)),
+			checkPixel(new(point.X,     point.Y - 1)),
+			checkPixel(new(point.X + 1, point.Y - 1)),
+			checkPixel(new(point.X - 1, point.Y    )),
+			checkPixel(point),
+			checkPixel(new(point.X + 1, point.Y    )),
+			checkPixel(new(point.X - 1, point.Y + 1)),
+			checkPixel(new(point.X,     point.Y + 1)),
+			checkPixel(new(point.X + 1, point.Y + 1)),
 		};
+		//bool[] bits = new bool[9];
+		//void addBit(int index, Point point) =>
+		//	bits[index] = CheckPixel(image, point);
 
 		int position = 0;
 		for (int i = 0; i < 9; i++) {
@@ -87,6 +112,6 @@ public sealed class Day20 : ISolver {
 
 
 
-	private readonly record struct Image(HashSet<Point> Points, Rectangle Bounds); 
+	private readonly record struct Image(HashSet<Point> Points, Rectangle Bounds, bool InfinitePixel); 
 
 }

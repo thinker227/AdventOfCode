@@ -41,7 +41,11 @@ public readonly struct Rectangle : IEquatable<Rectangle> {
 
 
 
-    public bool Equals(Rectangle other) =>
+	public bool PointInRectangle(Point point) =>
+		point.X >= Min.X && point.X <= Max.X &&
+		point.Y >= Min.Y && point.Y <= Max.Y;
+
+	public bool Equals(Rectangle other) =>
         Min.Equals(other.Min) &&
         Max.Equals(other.Max);
     public override bool Equals(object? obj) =>
