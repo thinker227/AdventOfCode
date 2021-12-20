@@ -1,17 +1,22 @@
 namespace AdventOfCode.Solutions;
 
 [Solver(20, @"input\20.txt")]
-public sealed class Day20 : ISolver {
+public sealed class Day20 : ISplitSolver {
 	
-	public CombinedSolution Solve(string input) {
+	public Part SolvePart1(string input) {
 		var (algorithm, image) = ParseInput(input);
-		Console.WriteLine(ImageToString(image));
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
 			image = Enhance(image, algorithm);
-			Console.WriteLine(ImageToString(image));
-		}
 		
+		return image.Points.Count;
+	}
+	public Part SolvePart2(string input) {
+		var (algorithm, image) = ParseInput(input);
+
+		for (int i = 0; i < 50; i++)
+			image = Enhance(image, algorithm);
+
 		return image.Points.Count;
 	}
 
@@ -56,18 +61,6 @@ public sealed class Day20 : ISolver {
 			bounds.Max.X + 1,
 			bounds.Max.Y + 1);
 
-		// Add borders if infinite pixel is active
-		if (image.InfinitePixel) {
-			for (int x = newBounds.Min.X; x <= newBounds.Max.X; x++) {
-				enhanced.Add(new(x, newBounds.Min.Y));
-				enhanced.Add(new(x, newBounds.Max.Y));
-			}
-			for (int y = newBounds.Min.Y; y <= newBounds.Max.Y; y++) {
-				enhanced.Add(new(newBounds.Min.X, y));
-				enhanced.Add(new(newBounds.Max.X, y));
-			}
-		}
-
 		for (int x = newBounds.Min.X; x <= newBounds.Max.X; x++) {
 			for (int y = newBounds.Min.Y; y <= newBounds.Max.Y; y++) {
 				Point current = new(x, y);
@@ -77,8 +70,7 @@ public sealed class Day20 : ISolver {
 		}
 
 		bool infinitePixel = image.InfinitePixel;
-		if (algorithm[0] && !image.InfinitePixel) infinitePixel = true;
-		if (!algorithm[^1] && image.InfinitePixel) infinitePixel = false;
+		if (algorithm[0]) infinitePixel = !infinitePixel;
 		
 		return new(enhanced, newBounds, infinitePixel);
 	}
