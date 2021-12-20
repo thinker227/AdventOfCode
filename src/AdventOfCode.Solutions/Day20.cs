@@ -1,0 +1,92 @@
+namespace AdventOfCode.Solutions;
+
+[Solver(20, @"input\20.txt")]
+public sealed class Day20 : ISolver {
+	
+	public CombinedSolution Solve(string input) {
+		var (algorithm, image) = ParseInput(input);
+		
+		for (int i = 0; i < 2; i++)
+			image = Enhance(image, algorithm);
+		
+		return image.Points.Count;
+	}
+
+	private static (bool[] algorithm, Image image) ParseInput(string input) {
+		var span = input.AsSpan();
+		int newline = span.IndexOf('\r');
+		var algorithm = span[..newline];
+		var points = span[(newline+4)..];
+
+		return(ParseAlgorithm(algorithm), ParseImage(points));
+	}
+	private static bool[] ParseAlgorithm(ReadOnlySpan<char> algorithm) {
+		var bits = new bool[algorithm.Length];
+		for (int i = 0; i < algorithm.Length; i++)
+			bits[i] = algorithm[i] == '#';
+		return bits;
+	}
+	private static Image ParseImage(ReadOnlySpan<char> points) {
+		HashSet<Point> hashPoints = new();
+
+		int width = 0;
+		int y = 0;
+		foreach (var line in points.EnumerateLines()) {
+			width = line.Length;
+			for (int x = 0; x < line.Length; x++)
+				if (line[x] == '#') hashPoints.Add(new(x, y));
+			y++;
+		}
+
+		int height = y;
+		Rectangle bounds = new(0, 0, width, height);
+
+		return new(hashPoints, bounds);
+	}
+	
+	private static Image Enhance(Image image, bool[] algorithm) {
+		HashSet<Point> enhanced = new();
+		var bounds = image.Bounds;
+		Rectangle newBounds = new(
+			bounds.Min.X - 1,
+			bounds.Min.Y - 1,
+			bounds.Max.X + 1,
+			bounds.Max.Y + 1);
+
+		for (int x = bounds.Min.X; x < bounds.Max.X; x++) {
+			for (int y = bounds.Min.Y; y < bounds.Max.Y; y++) {
+				Point current = new(x, y);
+				bool lit = GetEnhancedPoint(image.Points, current, algorithm);
+				if (lit) enhanced.Add(current);
+			}
+		}
+		
+		return new(enhanced, newBounds);
+	}
+	private static bool GetEnhancedPoint(HashSet<Point> points, Point point, bool[] algorithm) {
+		var bits = new bool[] {
+			points.Contains(new(point.X - 1, point.Y - 1)),
+			points.Contains(new(point.X,     point.Y - 1)),
+			points.Contains(new(point.X + 1, point.Y - 1)),
+			points.Contains(new(point.X - 1, point.Y    )),
+			points.Contains(point),
+			points.Contains(new(point.X + 1, point.Y    )),
+			points.Contains(new(point.X - 1, point.Y + 1)),
+			points.Contains(new(point.X,     point.Y + 1)),
+			points.Contains(new(point.X + 1, point.Y + 1)),
+		};
+
+		int position = 0;
+		for (int i = 0; i < 9; i++) {
+			position <<= 1;
+			if (bits[i]) position |= 1;
+		}
+
+		return algorithm[position];
+	}
+
+
+
+	private readonly record struct Image(HashSet<Point> Points, Rectangle Bounds); 
+
+}
