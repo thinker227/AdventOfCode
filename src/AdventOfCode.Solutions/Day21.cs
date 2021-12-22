@@ -25,8 +25,6 @@ public sealed class Day21 : ISolver {
 		int losingScore = player == 1 ? p2.Score : p1.Score;
 		int result = losingScore * die;
 		return result;
-
-		throw new NotImplementedException();
 	}
 
 	private static (Player a, Player b) ParseInput(string input) {
@@ -37,7 +35,7 @@ public sealed class Day21 : ISolver {
 
 	private static Player Turn(Player player, int steps) {
 		int newPosition = player.Position + steps;
-		if (newPosition > 10) newPosition %= 10;
+		while (newPosition > 10) newPosition -= 10;
 		int newScore = player.Score + newPosition;
 		return new(newPosition, newScore);
 	}
@@ -45,6 +43,5 @@ public sealed class Day21 : ISolver {
 
 
 	private readonly record struct Player(int Position, int Score);
-	private readonly record struct GameResult(Player Player1, Player Player2, int Winner, int Turns);
 	
 }
