@@ -41,6 +41,12 @@ public readonly struct Rectangle : IEquatable<Rectangle> {
 
 
 
+	/// <summary>
+	/// Determines whether a specified <see cref="Point"/> is in this rectangle.
+	/// </summary>
+	/// <param name="point">The point to check.</param>
+	/// <returns>Whether <paramref name="point"/> is within
+	/// the current <see cref="Rectangle"/>.</returns>
 	public bool PointInRectangle(Point point) =>
 		point.X >= Min.X && point.X <= Max.X &&
 		point.Y >= Min.Y && point.Y <= Max.Y;

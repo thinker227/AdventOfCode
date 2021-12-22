@@ -53,7 +53,7 @@ public readonly struct Point3 {
 	public override bool Equals(object? obj) =>
 		obj is Point3 p && Equals(p);
 	public override int GetHashCode() =>
-		HashCode.Combine(X, Y);
+		HashCode.Combine(X, Y, Z);
 	public override string ToString() =>
 		$"{X},{Y},{Z}";
 

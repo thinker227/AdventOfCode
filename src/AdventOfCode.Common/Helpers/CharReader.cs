@@ -86,7 +86,7 @@ public unsafe struct CharReader {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public char NextChar() {
 		if (current >= upper) return '\0';
-		return *current++;
+		return *++current;
 	}
 	/// <summary>
 	/// Moves to the next character.
@@ -95,6 +95,16 @@ public unsafe struct CharReader {
 	public void MoveNext() {
 		if (current < upper) current++;
 	}
+
+	/// <summary>
+	/// Gets a span of characters from the current position with a specified length.
+	/// </summary>
+	/// <param name="length">The length of the span to get.</param>
+	/// <returns>A <see cref="ReadOnlySpan{T}"/> of characters from the
+	/// current position with a length of <paramref name="length"/>.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public ReadOnlySpan<char> GetSpan(int length) =>
+		new(current, length);
 
 	public override string? ToString() =>
 		current < upper ? $"{(int)*current} '{*current}'" : "";
